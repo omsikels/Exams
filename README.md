@@ -46,6 +46,11 @@ To monitor student behavior, this platform utilizes a custom-built **Neural Keyp
 
 We have built a fully automated startup script. You do not need to use the command line or manually install software.
 
+⚠️ Critical Placement Note (Required)
+Due to upcoming system updates, this project must be placed strictly inside the XAMPP htdocs directory (e.g., C:\xampp\htdocs\exams\).
+
+Note: You do not need to actually run the XAMPP control panel or start Apache/MySQL. We are temporarily requiring this specific folder path so our team can focus entirely on delivering new features and AI updates before standardizing the file architecture.
+
 ### Running the Application
 
 1. Open the main project folder in File Explorer.
