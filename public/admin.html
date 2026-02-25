@@ -4,343 +4,562 @@
   <meta charset="UTF-8">
   <title>Admin Panel</title>
   <link rel="stylesheet" href="/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      /* Matched to the student exam interface */
-      --bg-color: #cbbde5; 
-      --action-bg: #ffffff;
-      --border-color: #000000;
-      --border-width: 4px;
-      --border-radius: 20px;
-      --font-family: Arial, sans-serif;
-      --shadow-large: 6px 6px 0px rgba(0, 0, 0, 0.2);
-      --shadow-small: 4px 4px 0px rgba(0, 0, 0, 0.2);
-      --shadow-pressed: 2px 2px 0px rgba(0, 0, 0, 0.2);
+      /* GoMeal Inspired Color Palette */
+      --bg-body: #f8f9fa;
+      --bg-surface: #ffffff;
+      --primary: #ffb703; /* Warm yellow/orange */
+      --primary-hover: #fb8500;
+      --text-main: #2b2b2b;
+      --text-muted: #8d8d8d;
+      --border-light: #f1f1f1;
+      
+      --border-radius-lg: 20px;
+      --border-radius-md: 12px;
+      --border-radius-sm: 8px;
+      
+      --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
+      --shadow-hover: 0 8px 25px rgba(255, 183, 3, 0.2);
+      
+      --font-family: 'Nunito', sans-serif;
     }
 
     body {
       margin: 0;
-      padding: 20px;
+      padding: 0;
       font-family: var(--font-family);
-      background-color: var(--bg-color);
+      background-color: var(--bg-body);
+      color: var(--text-main);
       height: 100vh;
       box-sizing: border-box;
       display: flex;
-      flex-direction: column;
-      gap: 20px;
+      overflow: hidden;
     }
 
-    /* Top Bar Styling */
+    /* ---------------------------------
+       SIDEBAR
+       --------------------------------- */
+    .sidebar {
+      width: 260px;
+      background-color: var(--bg-surface);
+      display: flex;
+      flex-direction: column;
+      padding: 25px 20px;
+      box-shadow: 2px 0 15px rgba(0,0,0,0.03);
+      z-index: 10;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .brand span {
+      color: var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .nav-item {
+      padding: 12px 20px;
+      border-radius: var(--border-radius-md);
+      color: var(--text-muted);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-item:hover {
+      color: var(--primary);
+      background-color: rgba(255, 183, 3, 0.1);
+    }
+
+    .nav-item.active {
+      background-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(255, 183, 3, 0.3);
+    }
+
+    /* Video List section embedded in sidebar */
+    .sidebar-videos {
+      flex: 1;
+      overflow-y: auto;
+      border-top: 1px solid var(--border-light);
+      padding-top: 20px;
+    }
+
+    .sidebar-videos h4 {
+      margin: 0 0 15px 0;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    #videosTree a, #videoList a { 
+      color: var(--text-main); 
+      text-decoration: none; 
+      display: block; 
+      margin: 8px 0; 
+      padding: 10px 15px; 
+      border-radius: var(--border-radius-sm); 
+      font-size: 0.85rem; 
+      font-weight: 700;
+      background: var(--bg-body); 
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    #videosTree a:hover, #videoList a:hover { 
+      background: rgba(255, 183, 3, 0.08); 
+      color: var(--primary-hover); 
+      border-color: rgba(255, 183, 3, 0.2);
+      transform: translateX(4px);
+    }
+    
+    #videosTree a.active, #videoList a.active { 
+      background: var(--primary); 
+      color: #fff; 
+      border-color: var(--primary);
+      box-shadow: 0 4px 10px rgba(255, 183, 3, 0.3);
+    }
+
+    /* Promotional / Action Card */
+    .promo-card {
+      background: linear-gradient(135deg, #ffb703, #fb8500);
+      border-radius: var(--border-radius-md);
+      padding: 20px;
+      color: white;
+      text-align: center;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .promo-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .promo-card h3 { margin: 0 0 10px 0; font-size: 1rem; }
+    .promo-card p { margin: 0 0 15px 0; font-size: 0.8rem; opacity: 0.9; line-height: 1.4; }
+    .promo-card .btn-white {
+      background: #fff;
+      color: var(--primary-hover);
+      padding: 8px 15px;
+      border-radius: var(--border-radius-sm);
+      font-weight: 700;
+      font-size: 0.8rem;
+      display: inline-block;
+    }
+
+    /* ---------------------------------
+       MAIN CONTENT
+       --------------------------------- */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 30px 40px;
+    }
+
     .top-bar {
-      border: var(--border-width) solid var(--border-color);
-      padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: var(--bg-color);
-      box-shadow: var(--shadow-large);
+      margin-bottom: 40px;
     }
 
-    .top-bar h2 {
-      margin: 0;
+    .page-title {
       font-size: 1.8rem;
-      font-weight: bold;
-      text-transform: uppercase;
+      font-weight: 700;
+      margin: 0;
     }
 
-    /* Main Container */
-    .admin-container {
-      display: flex;
-      flex: 1;
-      gap: 20px;
-      min-height: 0; /* allows children to scroll properly */
-    }
-
-    /* Left Panel Styling */
-    .left-panel {
-      width: 280px;
-      border: var(--border-width) solid var(--border-color);
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      background-color: var(--bg-color);
-      box-shadow: var(--shadow-large);
-    }
-
-    /* Right Panel Styling */
-    .right-panel {
-      flex: 1;
-      border: var(--border-width) solid var(--border-color);
-      padding: 30px;
-      overflow-y: auto;
-      background-color: var(--bg-color);
-      box-shadow: var(--shadow-large);
-      position: relative;
-    }
-
-    .right-panel h2.panel-title {
-      margin-top: 0;
-      margin-bottom: 25px;
-      font-size: 1.6rem;
-      text-transform: uppercase;
-    }
-
-    /* General Button Styling (Brutalist) */
+    /* Buttons */
     button {
-      background: var(--action-bg);
-      border: var(--border-width) solid var(--border-color);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
       padding: 10px 20px;
-      font-weight: bold;
-      font-size: 1rem;
+      border-radius: var(--border-radius-sm);
+      font-weight: 600;
+      font-size: 0.9rem;
       cursor: pointer;
       font-family: var(--font-family);
-      color: #000;
-      box-shadow: var(--shadow-small);
-      transition: all 0.1s ease;
-      text-transform: uppercase;
+      color: var(--text-main);
+      transition: all 0.2s ease;
     }
 
     button:hover {
-      background: #e0e0e0;
+      border-color: var(--primary);
+      color: var(--primary);
+      background-color: rgba(255, 183, 3, 0.05);
     }
 
-    button:active {
-      transform: translate(2px, 2px);
-      box-shadow: var(--shadow-pressed);
+    .btn-primary {
+      background-color: var(--primary);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 10px rgba(255, 183, 3, 0.3);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      color: #fff;
     }
 
     #logout {
-      padding: 10px 30px;
+      border-color: #ff4d4f;
+      color: #ff4d4f;
+    }
+    #logout:hover {
+      background-color: #fff1f0;
     }
 
-    #refreshVideos {
-      width: 100%;
-      padding: 15px;
-      margin-bottom: 20px;
-    }
-
-    /* Menu Cards / Buttons */
+    /* Main Menu Cards (Dashboard Categories) */
     .menu-cards {
       display: flex;
-      gap: 25px;
-      margin-top: 10px;
+      gap: 20px;
+      flex-wrap: wrap;
     }
 
     .card {
-      width: 180px;
+      background: var(--bg-surface);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-soft);
+      width: 200px;
       height: 180px;
-      background: var(--action-bg);
-      border: var(--border-width) solid var(--border-color);
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow-large);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-weight: bold;
+      font-weight: 700;
       font-size: 1.1rem;
       cursor: pointer;
-      transition: all 0.1s ease;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
       gap: 15px;
-      padding: 15px;
+      padding: 20px;
     }
 
     .card:hover {
-      background: #f0f0f0;
-    }
-    
-    .card:active {
-      transform: translate(4px, 4px);
-      box-shadow: var(--shadow-pressed);
+      transform: translateY(-5px);
+      border-color: rgba(255, 183, 3, 0.3);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
     }
 
-    .card span {
-      font-size: 2rem;
+    .card .icon-wrapper {
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 183, 3, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: var(--primary);
     }
 
     /* Content Views */
-    .content-view {
-      display: none;
-    }
-    
+    .content-view { display: none; }
     .content-view.active {
       display: block;
-      animation: fadeIn 0.3s ease;
+      animation: fadeIn 0.4s ease;
     }
 
-    .back-btn {
-      margin-bottom: 25px;
-      background: #d8cdec;
-    }
-
-    /* Preserved Original Styles for Editor content, adapted for brutalism */
+    /* Standardized Sections */
     .section {
-      border: var(--border-width) solid var(--border-color);
-      padding: 20px;
+      background: var(--bg-surface);
+      border-radius: var(--border-radius-lg);
+      padding: 30px;
       margin-bottom: 25px;
-      background: var(--action-bg);
-      box-shadow: var(--shadow-small);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid var(--border-light);
     }
     
     .section h3 {
-        margin-top: 0;
-        text-transform: uppercase;
-        border-bottom: 2px solid var(--border-color);
-        padding-bottom: 10px;
-        margin-bottom: 20px;
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: var(--text-main);
+      margin-bottom: 20px;
     }
 
-    .video-box { border: var(--border-width) solid #000; height: 240px; display: flex; align-items: center; justify-content: center; background: #fafafa; margin-bottom: 15px; }
-    .timeline { height: 40px; border: var(--border-width) solid #000; position: relative; cursor: pointer; margin-bottom: 15px; background: #e0d8f0; }
-    .emotion-list { display: none; border: var(--border-width) solid #000; padding: 15px; margin-top: 15px; background: #fff; box-shadow: var(--shadow-small); }
-    
-    #generateJson { background: #cce5ff; }
-    #saveEdits { background: #d4edda; }
-    #undoSplit { background: #f8d7da; }
-    
-    #videoPlayer { display: block; border: var(--border-width) solid #000; background: #000; max-width: 100%; box-shadow: var(--shadow-small); }
-    #videoTimeline { position: relative; cursor: pointer; border: var(--border-width) solid #000 !important; }
-    .timeline-marker { position: absolute; top: 0; width: 4px; height: 100%; background: red; z-index: 2; }
-    
-    .user-header { font-weight: bold; margin-top: 15px; padding-bottom: 5px; border-bottom: 2px solid #000; }
-    .user-header:hover { cursor: pointer; background: rgba(0,0,0,0.05); }
-    #videosTree a { color: #000; text-decoration: none; display: block; margin: 8px 0; padding: 5px; border: 2px solid transparent; }
-    #videosTree a:hover { border-color: #000; background: #fff; }
-    #videosTree a.active { font-weight: bold; background: #fff; border: 2px solid #000; box-shadow: 2px 2px 0px rgba(0,0,0,0.2); }
-    
+    /* Chart Container */
+    .chart-container {
+      position: relative;
+      height: 400px;
+      width: 100%;
+    }
+
+    /* Extracted Editor CSS */
+    .video-box { border-radius: var(--border-radius-md); height: 240px; display: flex; align-items: center; justify-content: center; background: var(--bg-body); margin-bottom: 15px; border: 1px dashed #ccc;}
+    .timeline { height: 40px; border-radius: 20px; position: relative; cursor: pointer; margin-bottom: 15px; background: var(--bg-body); border: 1px solid var(--border-light);}
+    .emotion-list { display: none; border-radius: var(--border-radius-sm); padding: 15px; margin-top: 15px; background: #fff; box-shadow: var(--shadow-hover); border: 1px solid var(--border-light);}
+    #videoPlayer { display: block; border-radius: var(--border-radius-md); background: #000; max-width: 100%; box-shadow: var(--shadow-soft); }
+    #videoTimeline { position: relative; cursor: pointer; border-radius: 20px; background: var(--bg-body); border: 1px solid var(--border-light);}
+    .timeline-marker { position: absolute; top: 0; width: 4px; height: 100%; background: var(--primary); z-index: 2; border-radius: 2px;}
+    .user-header { font-weight: 700; margin-top: 15px; padding-bottom: 5px; color: var(--text-muted); font-size: 0.9rem;}
+    .user-header:hover { cursor: pointer; color: var(--primary); }
     .time-field { margin-bottom: 15px; }
-    .time-field label { display: block; margin-bottom: 5px; font-weight: bold; }
-    .time-field input { width: 120px; padding: 8px; border: var(--border-width) solid #000; background: #fff; font-family: var(--font-family); font-weight: bold; }
-    .time-field input:focus { outline: none; background: #e0d8f0; }
-    
-    .question-summary { background: #f0f0f0; padding: 15px; border: var(--border-width) solid #000; margin-bottom: 20px; font-weight: bold; }
+    .time-field label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; color: var(--text-muted);}
+    .time-field input { width: 100%; max-width: 150px; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-light); font-family: var(--font-family); background: var(--bg-body); transition: all 0.2s; }
+    .time-field input:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(255, 183, 3, 0.1);}
+    .question-summary { background: rgba(255, 183, 3, 0.05); padding: 20px; border-radius: var(--border-radius-md); margin-bottom: 20px; color: var(--text-main); border: 1px solid rgba(255, 183, 3, 0.2); }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
   
-  <div class="top-bar">
-    <h2>Admin Panel</h2>
-    <button id="logout">Logout</button>
-  </div>
+  <aside class="sidebar">
+    <div class="brand">
+      Admin<span>Panel</span>
+    </div>
+    
+    <div class="nav-links">
+      <div class="nav-item active" id="link-main-menu" onclick="showView('main-menu', 'Dashboard')">
+        📊 Dashboard
+      </div>
+      <div class="nav-item" id="link-questions-view" onclick="showView('questions-view', 'Question Editor')">
+        📝 Questions
+      </div>
+      <div class="nav-item" id="link-video-view" onclick="showView('video-view', 'Video Preview')">
+        🎬 Video Editor
+      </div>
+      <div class="nav-item" id="link-graph-view" onclick="showView('graph-view', 'Analytics')">
+        📈 Analytics
+      </div>
+    </div>
 
-  <div class="admin-container">
-    <div class="left-panel">
-      <button id="refreshVideos">Refresh Video List</button>
+    <div class="sidebar-videos">
+      <h4>Video Directory</h4>
+      <button id="refreshVideos" style="width: 100%; margin-bottom: 15px; font-size: 0.8rem;">↺ Refresh List</button>
       <div id="videosTree"></div>
       <div id="videoList"></div>
+      
       <div id="emotionList" class="emotion-list">
-        <h4 style="margin-top:0; border-bottom: 2px solid #000; padding-bottom: 5px;">Detected Emotions</h4>
+        <h4 style="margin-top:0; border-bottom: 1px solid var(--border-light); padding-bottom: 5px;">Detected Emotions</h4>
         <ul id="emotions" style="padding-left: 20px; margin-bottom: 0;"></ul>
       </div>
     </div>
-  
-    <div class="right-panel">
-      <h2 class="panel-title">Admin Editor</h2>
 
-      <div id="main-menu" class="menu-cards active">
-        <div class="card" onclick="showView('questions-view')">
-          <div>Questions</div>
-          <span>?</span>
-        </div>
-        
-        <div class="card" onclick="showView('video-view')">
-          <div>Video Preview</div>
-          <span>📹</span>
-        </div>
-        
-        <div class="card" onclick="window.open('/enhanced_facial_recognition.html', '_blank')">
-          <div>Enhanced<br>Facial<br>Recognition</div>
-        </div>
-      </div>
-
-      <div id="questions-view" class="content-view">
-        <button class="back-btn" onclick="showView('main-menu')">← Back to Menu</button>
-        
-        <div class="section">
-          <h3>Questions</h3>
-          <div id="questionList"></div>
-          <button id="addQuestion" style="margin-top: 15px;">+ Add Question</button>
-        </div>
-
-        <div class="section">
-          <h3>Exam Summary</h3>
-          <div class="question-summary">
-            <p style="margin-top:0;">Individual question timing is now enabled.</p>
-            <p>Set the time limit for each question individually.</p>
-            <p style="margin-bottom:0;">The total exam time will be calculated automatically.</p>
-          </div>
-          <button id="saveAll">Save All Questions</button>
-        </div>
-
-        <div class="section">
-          <h3>Edit Questions</h3>
-          <div id="editor"></div>
-        </div>
-      </div>
-
-      <div id="video-view" class="content-view">
-        <button class="back-btn" onclick="showView('main-menu')">← Back to Menu</button>
-        
-        <div id="videoEditor" class="section">
-          <h3>Video Preview</h3>
-
-          <video id="videoPlayer" width="600" controls></video>
-
-          <div id="controls" style="margin-top: 15px; display: flex; gap: 10px;">
-              <button id="playPause">▶ Play</button>
-              <button id="markSplit">Split Segment</button>
-              <button id="undoSplit">↩ Undo Last Split</button>
-          </div>
-
-          <div id="videoTimeline"
-              style="position: relative;
-              width: 100%;
-              max-width: 600px;
-              height: 35px;
-              background: #e0d8f0;
-              margin-top: 20px;
-              overflow: hidden;">
-          <div id="timelineProgress"
-              style="position: absolute;
-              top: 0;
-              left: 0;
-              height: 100%;
-              width: 0%;
-              background: rgba(0, 0, 0, 0.3);
-              pointer-events: none;"></div>
-          </div>
-
-          <div style="margin-top: 25px; border-top: 2px solid #000; padding-top: 20px; display: flex; gap: 10px;">
-              <button id="generateJson">Generate JSON</button>
-              <button id="saveEdits">Save Edits</button>
-          </div>
-        </div>
-      </div>
-
+    <div class="promo-card" onclick="window.open('/enhanced_facial_recognition.html', '_blank')">
+      <h3>Facial Recognition</h3>
+      <p>Monitor expressions and anomalies during the exam.</p>
+      <div class="btn-white">Launch App</div>
     </div>
-  </div>
+  </aside>
+
+  <main class="main-wrapper">
+    <div class="top-bar">
+      <h2 class="page-title" id="pageTitleDisplay">Dashboard</h2>
+      <button id="logout">Logout</button>
+    </div>
+
+    <div id="main-menu" class="content-view active">
+      <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--text-muted); font-size: 1rem;">Menu</h3>
+      <div class="menu-cards">
+        <div class="card" onclick="showView('questions-view', 'Question Editor')">
+          <div class="icon-wrapper">📝</div>
+          <div>Manage Questions</div>
+        </div>
+        
+        <div class="card" onclick="showView('video-view', 'Video Preview')">
+          <div class="icon-wrapper">🎬</div>
+          <div>Video Preview</div>
+        </div>
+
+        <div class="card" onclick="showView('graph-view', 'Analytics')">
+          <div class="icon-wrapper">📊</div>
+          <div>Exam Analytics</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="questions-view" class="content-view">
+      <div class="section">
+        <h3>Questions List</h3>
+        <div id="questionList"></div>
+        <button id="addQuestion" class="btn-primary" style="margin-top: 15px;">+ Add Question</button>
+      </div>
+
+      <div class="section">
+        <h3>Exam Summary</h3>
+        <div class="question-summary">
+          <p style="margin-top:0;"><strong>Individual question timing is enabled.</strong></p>
+          <p>Set the time limit for each question individually below.</p>
+          <p style="margin-bottom:0; color: var(--text-muted); font-size: 0.9rem;">The total exam time will be calculated automatically based on your inputs.</p>
+        </div>
+        <button id="saveAll" class="btn-primary">Save All Questions</button>
+      </div>
+
+      <div class="section">
+        <h3>Edit Questions</h3>
+        <div id="editor"></div>
+      </div>
+    </div>
+
+    <div id="video-view" class="content-view">
+      <div id="videoEditor" class="section">
+        <h3>Video Preview Workspace</h3>
+
+        <video id="videoPlayer" width="600" controls></video>
+
+        <div id="controls" style="margin-top: 20px; display: flex; gap: 10px;">
+            <button id="playPause" class="btn-primary">▶ Play</button>
+            <button id="markSplit">Split Segment</button>
+            <button id="undoSplit" style="color: #ff4d4f; border-color: #ff4d4f;">↩ Undo Last Split</button>
+        </div>
+
+        <div id="videoTimeline" style="width: 100%; max-width: 600px; height: 25px; margin-top: 25px;">
+            <div id="timelineProgress" style="position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: rgba(255, 183, 3, 0.4); pointer-events: none;"></div>
+        </div>
+
+        <div style="margin-top: 30px; border-top: 1px solid var(--border-light); padding-top: 25px; display: flex; gap: 15px;">
+            <button id="generateJson">Generate JSON</button>
+            <button id="saveEdits" class="btn-primary">Save Edits</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="graph-view" class="content-view">
+      <div class="section">
+        <h3>Results Overview (Right vs. Wrong)</h3>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">
+          This graph automatically groups variations like <code>right1</code>, <code>right2</code> into master categories.
+        </p>
+        
+        <div class="chart-container">
+          <canvas id="resultsChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+  </main>
 
   <script type="module" src="/js/admin.js"></script>
   <script type="module" src="/js/videoSegment.js"></script>
   <script type="module" src="/js/generateJson.js"></script>
   <script>
-    // View Switcher Logic
-    function showView(viewId) {
-      document.getElementById('main-menu').classList.remove('active');
-      document.getElementById('questions-view').classList.remove('active');
-      document.getElementById('video-view').classList.remove('active');
-      
-      document.getElementById('main-menu').style.display = 'none';
-      document.getElementById('questions-view').style.display = 'none';
-      document.getElementById('video-view').style.display = 'none';
+    // Modernized View Switcher Logic
+    function showView(viewId, title) {
+      document.getElementById('pageTitleDisplay').textContent = title;
+
+      document.querySelectorAll('.content-view').forEach(el => {
+        el.classList.remove('active');
+        setTimeout(() => el.style.display = 'none', 50); 
+      });
+
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.getElementById('link-' + viewId).classList.add('active');
       
       const target = document.getElementById(viewId);
-      target.style.display = viewId === 'main-menu' ? 'flex' : 'block';
-      setTimeout(() => target.classList.add('active'), 10);
+      setTimeout(() => {
+        target.style.display = 'block';
+        target.classList.add('active');
+        
+        // If switching to the graph view, render the chart
+        if(viewId === 'graph-view') {
+            renderChart();
+        }
+      }, 60);
+    }
+
+    // -------------------------------------------------------------
+    // GRAPH LOGIC: Parsing numbers out of keys (right1, wrong2, etc.)
+    // -------------------------------------------------------------
+    let chartInstance = null;
+
+    function renderChart() {
+      // 1. Imagine this is the raw data you get from your backend or folders
+      const rawDataFromServer = {
+        "right1": 15,
+        "right2": 10,
+        "right_final": 5,
+        "wrong1": 8,
+        "wrong2": 12,
+        "wrong_misc": 4
+      };
+
+      // 2. We group them by checking if the string includes "right" or "wrong"
+      let totalRight = 0;
+      let totalWrong = 0;
+
+      for (const [key, value] of Object.entries(rawDataFromServer)) {
+        const lowerKey = key.toLowerCase();
+        
+        // We look for the base word, ignoring whatever numbers or strings come after it
+        if (lowerKey.includes('right')) {
+          totalRight += value;
+        } else if (lowerKey.includes('wrong')) {
+          totalWrong += value;
+        }
+      }
+
+      // 3. Render the Chart.js graph
+      const ctx = document.getElementById('resultsChart').getContext('2d');
+      
+      // Destroy previous chart instance if it exists so it doesn't overlap
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Total Right', 'Total Wrong'],
+          datasets: [{
+            label: 'Number of Responses',
+            data: [totalRight, totalWrong],
+            backgroundColor: [
+              'rgba(255, 183, 3, 0.8)',  /* GoMeal Yellow for Right */
+              'rgba(43, 43, 43, 0.8)'    /* Dark Gray for Wrong */
+            ],
+            borderColor: [
+              'rgba(255, 183, 3, 1)',
+              'rgba(43, 43, 43, 1)'
+            ],
+            borderWidth: 1,
+            borderRadius: 8 // matches the rounded theme
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: '#f1f1f1' }
+            },
+            x: {
+              grid: { display: false }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
     }
 
     // Temporary right-click handler for showing emotion list
@@ -364,6 +583,7 @@
       }
     });
 
+    // Preserved logout logic
     document.getElementById('logout').onclick = async () => {
       await fetch('/logout', { method: 'POST' });
       location.href = '/login.html';

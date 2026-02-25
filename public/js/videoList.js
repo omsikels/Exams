@@ -11,7 +11,7 @@ function initVideoList() {
   async function loadVideos() {
     videosTree.innerHTML = "Loading videos...";
     try {
-      const res = await fetch("/api/videos");
+      const res = await fetch("/api/videos", { cache: "no-store" });
       const videos = await res.json();
 
       videosTree.innerHTML = "";

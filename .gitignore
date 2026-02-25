@@ -1,0 +1,14 @@
+# ML checkpoints (DO NOT PUSH)
+ml_services/checkpoints_fer_IR50_Resnet/
+ml_services/checkpoints_rafdb_landmarks/
+*.pth
+
+# Generated results (optional but recommended)
+ml_services/facial_results/
+videos/
+
+# Python / env
+venv/
+__pycache__/
+*.pyc
+.env

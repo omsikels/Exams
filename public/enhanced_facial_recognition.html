@@ -2,86 +2,1220 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enhanced Facial Recognition</title>
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* GoMeal Inspired Color Palette */
+            --bg-body: #f8f9fa;
+            --bg-surface: #ffffff;
+            --primary: #ffb703; /* Warm yellow/orange */
+            --primary-hover: #fb8500;
+            --text-main: #2b2b2b;
+            --text-muted: #8d8d8d;
+            --border-light: #e1e5e9;
+            
+            --border-radius-lg: 20px;
+            --border-radius-md: 12px;
+            --border-radius-sm: 8px;
+            
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 8px 25px rgba(255, 183, 3, 0.2);
+            
+            --font-family: 'Nunito', sans-serif;
+            --success: #27ae60;
+            --danger: #e74c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden; /* Keep scrollbars inside main wrapper */
+        }
+
+        /* ---------------------------------
+           SIDEBAR (Embedded)
+           --------------------------------- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-surface);
+            display: flex;
+            flex-direction: column;
+            padding: 25px 20px;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.03);
+            z-index: 10;
+            overflow-y: auto;
+        }
+
+        .brand {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 40px;
+            line-height: 1.2;
+        }
+        .brand span { color: var(--primary); }
+
+        .sidebar ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-radius: var(--border-radius-md);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar ul li a:hover {
+            color: var(--primary);
+            background-color: rgba(255, 183, 3, 0.1);
+        }
+
+        /* ---------------------------------
+           MAIN CONTENT
+           --------------------------------- */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 30px 40px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        /* Layout Grid for Top Cards */
+        .status-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        /* Card Styling */
+        .card {
+            background-color: var(--bg-surface);
+            border-radius: var(--border-radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-light);
+            margin-bottom: 25px;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 10px;
+        }
+
+        /* Lists inside cards */
+        .system-status ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .system-status li {
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+        .system-status li span {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+        .status-online { color: var(--success) !important; }
+        .status-offline { color: var(--danger) !important; }
+
+        .connection-info {
+            padding: 15px;
+            border-radius: var(--border-radius-sm);
+            background: rgba(39, 174, 96, 0.1);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            font-size: 0.9rem;
+        }
+        .connection-info h4, .model-info h4 { margin: 0 0 8px 0; color: var(--text-main); }
+        .connection-info p, .model-info p { margin: 0 0 5px 0; color: var(--text-muted); }
+        .error-message {
+            background: rgba(231, 76, 60, 0.1) !important;
+            border-color: rgba(231, 76, 60, 0.3) !important;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            background-color: var(--bg-body);
+            border-radius: var(--border-radius-lg);
+            height: 35px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+            margin-top: 10px;
+        }
+        .progress-bar {
+            background-color: var(--primary);
+            width: 0%;
+            height: 100%;
+            border-radius: var(--border-radius-lg);
+            transition: width 0.4s ease;
+        }
+        #progressText {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            text-align: center;
+            line-height: 35px;
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            text-shadow: 0 0 5px rgba(255,255,255,0.8);
+        }
+
+        /* Log Styling */
+        .log-content {
+            background-color: var(--bg-body);
+            border-radius: var(--border-radius-md);
+            padding: 15px;
+            height: 250px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 13px;
+            color: var(--text-main);
+            border: 1px solid var(--border-light);
+            line-height: 1.5;
+        }
+
+        /* ---------------------------------
+           DYNAMIC JS INJECTED STYLES
+           --------------------------------- */
+        .student-item {
+            border: 1px solid var(--border-light);
+            border-radius: var(--border-radius-md);
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: var(--bg-surface);
+        }
+
+        .student-header {
+            padding: 15px 20px;
+            background: var(--bg-body);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+        .student-header:hover { background: #f0f2f5; }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .student-avatar {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 183, 3, 0.2);
+            color: var(--primary-hover);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .student-details h4 {
+            margin: 0 0 5px 0;
+            color: var(--text-main);
+            font-size: 1.1rem;
+        }
+
+        .student-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Accordion Functionality */
+        .student-videos {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+        .student-item.expanded .student-videos {
+            max-height: 2000px; 
+            padding: 20px;
+        }
+        .expand-icon {
+            transition: transform 0.3s ease;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .student-item.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Video Grid */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .video-card {
+            border: 1px solid var(--border-light);
+            border-radius: var(--border-radius-sm);
+            padding: 15px;
+            background: var(--bg-surface);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .video-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-soft);
+            border-color: rgba(255, 183, 3, 0.4);
+        }
+
+        .video-details h6 {
+            margin: 0 0 5px 0;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            word-break: break-all;
+        }
+        .video-size {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        .btn-small:hover:not(:disabled) {
+            background: var(--primary-hover);
+            box-shadow: 0 4px 10px rgba(255, 183, 3, 0.2);
+        }
+        .btn-small:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        /* Results Table */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+        .results-table th {
+            padding: 12px;
+            border-bottom: 2px solid var(--border-light);
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+        .results-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-main);
+        }
+        .emotion-tag {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: rgba(255, 183, 3, 0.2);
+            color: var(--primary-hover);
+        }
+
+        .hidden { display: none !important; }
+
+        /* Legacy folder style fallback */
+        .folder { border: 1px solid var(--border-light); border-radius: var(--border-radius-sm); margin-bottom: 10px; overflow: hidden; }
+        .folder-title { background: var(--bg-body); padding: 12px 20px; cursor: pointer; font-weight: 700; }
+        .folder-content { display: none; padding: 15px 20px; }
+        .folder.active .folder-content { display: block; }
+        .folder-content a { color: var(--text-main); text-decoration: none; font-weight: 600; display: block; margin-bottom: 8px;}
+        .folder-content a:hover { color: var(--primary); }
+
+        /* Stats Grid in results */
+        .video-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .stat-item {
+            background: var(--bg-body);
+            padding: 15px;
+            border-radius: var(--border-radius-sm);
+            text-align: center;
+        }
+        .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--text-main); }
+        .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 5px; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow: auto; }
+            .sidebar { width: 100%; height: auto; padding: 15px; }
+            .sidebar ul { flex-direction: row; flex-wrap: wrap; }
+            .main-wrapper { padding: 15px; }
+            .status-container { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
-    <div id="header"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            Enhanced<span>Facial Recognition</span>
+        </div>
+        <ul>
+            <li><a href="#" id="checkServerBtn">🔄 Check Server Status</a></li>
+            <li><a href="#" id="loadVideosBtn">📂 Load Videos</a></li>
+            <li><a href="#" id="processAllBtn">▶️ Process All Videos</a></li>
+            <li><a href="#" id="viewResultsBtn">📊 View Latest Results</a></li>
+            <li><a href="#" id="exportResultsBtn">📥 Export Results</a></li>
+        </ul>
+    </aside>
 
-    <div class="page-body">
-        <!-- Sidebar wrapper -->
-        <div id="sidebar-wrapper" class="sidebar-wrapper">
-            <div id="sidebar"></div>
+    <main class="main-wrapper">
+        <div class="top-bar">
+            <h2 class="page-title">Facial Recognition Dashboard</h2>
         </div>
 
-    <main class="main-content">
-
-    <!-- Top: two side-by-side cards -->
-    <div class="status-container">
-
-        <!-- System Status -->
-        <div class="card system-status">
-            <h3>System Status</h3>
-            <ul>
-                <li><strong>Server Status:</strong> <span id="serverStatus">Online</span> <span id="serverStatusText"></span></li>
-                <li><strong>Students:</strong> <span id="totalStudents">120</span></li>
-                <li><strong>Videos:</strong> <span id="totalVideos">35</span></li>
-                <li><strong>Model:</strong> <span id="modelType">Real Model</span></li>
-            </ul>
-            
-            <!-- Connection Info (will be populated by enhanced manager) -->
-            <div id="connectionInfo" class="connection-info" style="margin-top: 10px;"></div>
-            
-            <!-- Model Info (will be populated by enhanced manager) -->
-            <div id="modelInfo" class="model-info hidden" style="margin-top: 10px;"></div>
-        </div>
-
-        <!-- Processing Progress -->
-        <div class="card processing-progress">
-            <h3>Processing Progress</h3>
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="progressFill"></div>
-                <span id="progressText">Ready To Process</span>
+        <div class="status-container">
+            <div class="card system-status">
+                <h3>System Status</h3>
+                <ul>
+                    <li>Server Status: <span id="serverStatus">Checking...</span></li>
+                    <li class="hidden">Detail: <span id="serverStatusText"></span></li> <li>Students: <span id="totalStudents">0</span></li>
+                    <li>Videos: <span id="totalVideos">0</span></li>
+                    <li>Model: <span id="modelType">Unknown</span></li>
+                </ul>
+                
+                <div id="connectionInfo" class="connection-info hidden" style="margin-top: 15px;"></div>
+                <div id="modelInfo" class="model-info hidden" style="margin-top: 15px;"></div>
             </div>
-            <div id="progressDetails" style="margin-top: 10px; font-size: 0.9em; color: #666;"></div>
-        </div>
 
-    </div> <!-- end status-container -->
-
-    <!-- Videos section -->
-    <div id="videosSection" class="card videos-container">
-        <h3>Videos</h3>
-        <div id="studentsContainer">
-            <!-- Students/folders will be loaded here by Load Videos button -->
-            <!-- This replaces the old foldersList for backward compatibility -->
-        </div>
-    </div>
-
-    <!-- Results section (hidden by default) -->
-    <div id="resultsSection" class="card results-container hidden">
-        <h3>Processing Results</h3>
-        <div id="resultsContent">
-            <!-- Results will be displayed here -->
-        </div>
-    </div>
-
-    <!-- Processing Log -->
-    <div class="card processing-log">
-        <h3>Processing Log</h3>
-        <div id="logSection" class="log-content">
-            <div id="logOutput">
-                <!-- Log messages will appear here -->
+            <div class="card processing-progress">
+                <h3>Processing Progress</h3>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressFill"></div>
+                    <span id="progressText">Ready To Process</span>
+                </div>
+                <div id="progressDetails" style="margin-top: 15px; font-weight: 600; font-size: 0.9em; color: var(--text-muted);"></div>
             </div>
         </div>
-    </div>
 
-</main>
+        <div id="videosSection" class="card videos-container">
+            <h3>Directory / Videos</h3>
+            <div id="studentsContainer">
+                <p style="color: var(--text-muted); font-weight: 600;">Click "Load Videos" in the sidebar to populate this area.</p>
+            </div>
+        </div>
 
-    </div>
+        <div id="resultsSection" class="card results-container hidden">
+            <h3>Processing Results</h3>
+            <div id="resultsContent">
+                </div>
+        </div>
 
-    <div id="footer"></div>
+        <div class="card processing-log">
+            <h3>Processing Log</h3>
+            <div id="logSection" class="log-content">
+                <div id="logOutput">
+                    </div>
+            </div>
+        </div>
 
-    <script src="scripts.js"></script>
+    </main>
+
+<script>
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => {
+                if (window.facialManager) {
+                    window.facialManager.init();
+                }
+            }, 150);
+        });
+
+        class EnhancedFacialRecognitionManager {
+            constructor() {
+                this.baseURL = 'http://localhost:5001';
+                this.videos = {};
+                this.processing = false;
+                this.serverOnline = false;
+                this.modelLoaded = false;
+                this.expandedStudent = null;
+                
+                this.folderData = [
+                    { name: "Folder 1", videos: ["video1.mp4", "video2.mp4"] },
+                    { name: "Folder 2", videos: ["video3.mp4", "video4.mp4"] },
+                    { name: "Folder 3", videos: ["video5.mp4"] }
+                ];
+            }
+
+            init() {
+                this.bindEvents();
+                this.checkServerStatus();
+                setInterval(() => this.checkServerStatus(), 30000);
+            }
+
+            bindEvents() {
+                this.bindEnhancedEvents();
+                this.bindBackwardCompatibilityEvents();
+            }
+
+            bindEnhancedEvents() {
+                const checkBtn = document.getElementById('checkServerBtn');
+                const loadBtn = document.getElementById('loadVideosBtn');
+                const processBtn = document.getElementById('processAllBtn');
+                const viewBtn = document.getElementById('viewResultsBtn');
+                const exportBtn = document.getElementById('exportResultsBtn');
+
+                if (checkBtn) checkBtn.addEventListener('click', (e) => { e.preventDefault(); this.checkServerStatus(); });
+                if (loadBtn) loadBtn.addEventListener('click', (e) => { e.preventDefault(); this.loadVideos(); });
+                if (processBtn) processBtn.addEventListener('click', (e) => { e.preventDefault(); this.processAllVideos(); });
+                if (viewBtn) viewBtn.addEventListener('click', (e) => { e.preventDefault(); this.viewResults(); });
+                if (exportBtn) exportBtn.addEventListener('click', (e) => { e.preventDefault(); this.exportResults(); });
+            }
+
+            bindBackwardCompatibilityEvents() {
+                const loadBtn = document.getElementById('loadVideosBtn');
+                if (loadBtn) {
+                    loadBtn.addEventListener('click', () => {
+                        if (!this.serverOnline) {
+                            this.renderFoldersCompatibility();
+                        }
+                    });
+                }
+            }
+
+            async checkServerStatus() {
+                const statusElement = document.getElementById('serverStatus');
+                const statusTextElement = document.getElementById('serverStatusText');
+                const connectionInfo = document.getElementById('connectionInfo');
+                const modelInfo = document.getElementById('modelInfo');
+
+                this.log('🔍 Checking enhanced server status...');
+
+                try {
+                    const response = await fetch(`${this.baseURL}/health`, {
+                        method: 'GET',
+                        headers: { 'Accept': 'application/json' },
+                        signal: AbortSignal.timeout(10000)
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.serverOnline = true;
+                        this.modelLoaded = data.model_loaded;
+
+                        if (statusElement) {
+                            statusElement.className = 'status-online';
+                            statusElement.innerHTML = 'Online';
+                        }
+                        
+                        if (statusTextElement) {
+                            statusTextElement.innerHTML = this.modelLoaded ? '✅ Ready' : '⚠️ No Model';
+                        }
+
+                        if (document.getElementById('modelType')) {
+                            document.getElementById('modelType').textContent = data.mode || 'Enhanced';
+                        }
+
+                        if (connectionInfo) {
+                            connectionInfo.innerHTML = `
+                                <h4>🔗 Server Connection - Online</h4>
+                                <p>✅ Connected to ${data.service}</p>
+                                <p>🤖 Model Status: ${this.modelLoaded ? 'Loaded ✅' : 'Not Loaded ⚠️'}</p>
+                                <p>🎭 Detection: ${data.face_detection || 'OpenCV'}</p>
+                                <p>💻 Device: ${data.device || 'CPU'}</p>
+                            `;
+                            connectionInfo.classList.remove('hidden', 'error-message');
+                        }
+
+                        if (modelInfo && this.modelLoaded) {
+                            modelInfo.innerHTML = `
+                                <h4>🤖 NKF Model Information</h4>
+                                <p>✅ Enhanced Neural Keypoint Features (NKF) model is loaded</p>
+                                <p>🎯 Real emotion detection with landmark-based features</p>
+                                <p>📊 7 emotion classes: Happiness, Sadness, Anger, Fear, Surprise, Disgust, Neutral</p>
+                                <p>💻 Running on: ${data.device || 'CPU'}</p>
+                            `;
+                            modelInfo.classList.remove('hidden');
+                        }
+
+                        const loadVideosBtn = document.getElementById('loadVideosBtn');
+                        if (loadVideosBtn) loadVideosBtn.disabled = false;
+
+                        this.log('✅ Enhanced server is online and ready');
+                        
+                        // NEW: Smooth scroll to the top status container
+                        document.querySelector('.status-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        
+                        return true;
+                    } else {
+                        throw new Error(`Server responded with status ${response.status}`);
+                    }
+                } catch (error) {
+                    this.serverOnline = false;
+                    this.modelLoaded = false;
+
+                    if (statusElement) {
+                        statusElement.className = 'status-offline';
+                        statusElement.innerHTML = 'Offline';
+                    }
+                    
+                    if (statusTextElement) {
+                        statusTextElement.innerHTML = '❌ Offline';
+                    }
+
+                    if (connectionInfo) {
+                        connectionInfo.innerHTML = `
+                            <h4>🔗 Server Connection - Offline</h4>
+                            <p>❌ Cannot connect to enhanced facial recognition server</p>
+                            <p>🔧 Start the server with one of these commands:</p>
+                            <pre style="background: var(--bg-surface); padding: 10px; margin: 10px 0; border-radius: 4px; font-family: monospace; font-size: 12px; border: 1px solid var(--border-light);">
+python enhanced_facial_recognition_server.py
+# OR use the auto-configurator:
+python start_facial_server.py</pre>
+                            <p>⚠️ Error: ${error.message}</p>
+                        `;
+                        connectionInfo.classList.remove('hidden');
+                        connectionInfo.classList.add('error-message');
+                    }
+
+                    if (modelInfo) {
+                        modelInfo.classList.add('hidden');
+                    }
+
+                    const loadVideosBtn = document.getElementById('loadVideosBtn');
+                    const processAllBtn = document.getElementById('processAllBtn');
+                    if (loadVideosBtn) loadVideosBtn.disabled = true;
+                    if (processAllBtn) processAllBtn.disabled = true;
+
+                    this.log(`❌ Server connection failed: ${error.message}`);
+                    return false;
+                }
+            }
+
+            async loadVideos() {
+                if (!this.serverOnline) {
+                    this.log('⚠️ Server offline. Showing demo folders...');
+                    this.renderFoldersCompatibility();
+                    return;
+                }
+
+                this.log('📁 Loading videos from server...');
+
+                try {
+                    const response = await fetch(`${this.baseURL}/api/get-videos`, { cache: 'no-store' });
+
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                    }
+
+                    const videos = await response.json();
+
+                    this.videos = videos;
+                    this.displayStudentsList(videos);
+                    this.updateStats();
+
+                    const studentCount = Object.keys(videos).length;
+                    const videoCount = Object.values(videos).reduce((sum, studentVideos) => sum + studentVideos.length, 0);
+
+                    this.log(`✅ Loaded ${videoCount} videos for ${studentCount} students`);
+
+                    if (videoCount > 0 && this.modelLoaded) {
+                        const processAllBtn = document.getElementById('processAllBtn');
+                        if (processAllBtn) processAllBtn.disabled = false;
+                    }
+
+                } catch (error) {
+                    this.log(`❌ Error loading videos: ${error.message}`);
+                    this.renderFoldersCompatibility();
+                }
+            }
+
+            displayStudentsList(videos) {
+                const studentsContainer = document.getElementById('studentsContainer');
+                const videosSection = document.getElementById('videosSection');
+
+                if (!studentsContainer) return;
+
+                studentsContainer.innerHTML = '';
+
+                if (Object.keys(videos).length === 0) {
+                    if (videosSection) videosSection.classList.add('hidden');
+                    return;
+                }
+
+                Object.entries(videos).forEach(([studentName, studentVideos]) => {
+                    const totalSize = studentVideos.reduce((sum, v) => sum + v.size, 0);
+                    const avgSizeMB = (totalSize / (1024 * 1024) / studentVideos.length).toFixed(1);
+
+                    const studentItem = document.createElement('div');
+                    studentItem.className = 'student-item';
+                    studentItem.dataset.student = studentName;
+
+                    studentItem.innerHTML = `
+                        <div class="student-header" onclick="facialManager.toggleStudent('${studentName}')">
+                            <div class="student-info">
+                                <div class="student-avatar">${studentName.charAt(0).toUpperCase()}</div>
+                                <div class="student-details">
+                                    <h4>👤 ${studentName}</h4>
+                                    <div class="student-meta">
+                                        <span><strong>${studentVideos.length}</strong> videos</span>
+                                        <span>Total: <strong>${this.formatFileSize(totalSize)}</strong></span>
+                                        <span>Avg: <strong>${avgSizeMB} MB</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="expand-icon">▼</div>
+                        </div>
+                        <div class="student-videos">
+                            <div class="video-grid">
+                                ${studentVideos.map(video => `
+                                    <div class="video-card">
+                                        <div class="video-info">
+                                            <div class="video-details">
+                                                <h6>📄 ${video.filename}</h6>
+                                                <div class="video-size">${this.formatFileSize(video.size)}</div>
+                                            </div>
+                                        </div>
+                                        <div class="video-actions">
+                                            <button class="btn-small" 
+                                                    onclick="facialManager.processSingleVideo('${studentName}', '${video.filename}')"
+                                                    ${!this.modelLoaded ? 'disabled title="Model not loaded"' : ''}>
+                                                🎭 Process
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+
+                    studentsContainer.appendChild(studentItem);
+                });
+
+                if (videosSection) {
+                    videosSection.classList.remove('hidden');
+                    // NEW: Smooth scroll to the Videos Section (using timeout to allow DOM to render height first)
+                    setTimeout(() => {
+                        videosSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            }
+
+            renderFoldersCompatibility() {
+                const studentsContainer = document.getElementById('studentsContainer');
+                const videosSection = document.getElementById('videosSection');
+                
+                if (!studentsContainer) return;
+
+                studentsContainer.innerHTML = '';
+
+                this.folderData.forEach((folder, index) => {
+                    const folderDiv = document.createElement('div');
+                    folderDiv.classList.add('folder');
+
+                    const title = document.createElement('div');
+                    title.classList.add('folder-title');
+                    title.textContent = folder.name;
+
+                    const content = document.createElement('div');
+                    content.classList.add('folder-content');
+
+                    folder.videos.forEach(video => {
+                        const videoLink = document.createElement('a');
+                        videoLink.href = '#';
+                        videoLink.textContent = "📄 " + video;
+
+                        videoLink.addEventListener('click', e => {
+                            e.preventDefault();
+                            this.log(`📹 Demo video clicked: ${video}`);
+                            alert("Demo video: " + video + "\n\nConnect to server for real functionality.");
+                        });
+
+                        content.appendChild(videoLink);
+                    });
+
+                    folderDiv.appendChild(title);
+                    folderDiv.appendChild(content);
+                    studentsContainer.appendChild(folderDiv);
+
+                    title.addEventListener("click", () => {
+                        document.querySelectorAll(".folder").forEach(f => {
+                            if (f !== folderDiv) f.classList.remove("active");
+                        });
+                        folderDiv.classList.toggle("active");
+                    });
+                });
+
+                this.log('📁 Loaded demo folders (server offline)');
+                
+                if (videosSection) {
+                    // NEW: Smooth scroll for fallback mode
+                    setTimeout(() => {
+                        videosSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            }
+
+            toggleStudent(studentName) {
+                const targetStudent = document.querySelector(`[data-student="${studentName}"]`);
+                if (!targetStudent) return;
+
+                const isCurrentlyExpanded = targetStudent.classList.contains('expanded');
+                
+                document.querySelectorAll('.student-item').forEach(student => {
+                    student.classList.remove('expanded');
+                });
+                
+                if (!isCurrentlyExpanded) {
+                    targetStudent.classList.add('expanded');
+                    this.expandedStudent = studentName;
+                    this.log(`📂 Expanded ${studentName}'s videos`);
+                } else {
+                    this.expandedStudent = null;
+                    this.log(`📁 Collapsed ${studentName}'s videos`);
+                }
+            }
+
+            updateStats() {
+                const totalStudents = Object.keys(this.videos).length;
+                const totalVideos = Object.values(this.videos).reduce((sum, videos) => sum + videos.length, 0);
+
+                const totalStudentsElement = document.getElementById('totalStudents');
+                const totalVideosElement = document.getElementById('totalVideos');
+                
+                if (totalStudentsElement) totalStudentsElement.textContent = totalStudents;
+                if (totalVideosElement) totalVideosElement.textContent = totalVideos;
+            }
+
+            async processSingleVideo(studentName, videoFilename) {
+                if (!this.serverOnline || !this.modelLoaded) {
+                    alert('Server offline or model not loaded. Please check server status.');
+                    return;
+                }
+
+                // NEW: Smooth scroll to processing log to watch the action
+                document.querySelector('.processing-log').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                this.log(`🎬 Processing ${studentName}/${videoFilename} with NKF model...`);
+
+                try {
+                    const response = await fetch(`${this.baseURL}/api/process-video`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ student_name: studentName, video_filename: videoFilename })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.error || `Server error: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        const detectionRate = result.face_detection_rate ? (result.face_detection_rate * 100).toFixed(1) + '%' : 'N/A';
+                        this.log(`✅ ${studentName}/${videoFilename}: ${result.primary_emotion} (${detectionRate} face detection)`);
+
+                        if (result.timeline && result.timeline.length > 0) {
+                            this.log(`   📈 ${result.timeline.length} emotion segments detected`);
+                            this.log(`   ⏱️ Duration: ${result.duration}s`);
+                        }
+                    } else {
+                        this.log(`❌ ${studentName}/${videoFilename}: ${result.error || 'Processing failed'}`);
+                    }
+
+                } catch (error) {
+                    this.log(`❌ Error processing ${studentName}/${videoFilename}: ${error.message}`);
+                    alert(`Processing failed: ${error.message}`);
+                }
+            }
+
+            async processAllVideos() {
+                if (this.processing) return;
+                if (!this.serverOnline || !this.modelLoaded) {
+                    alert('Server offline or model not loaded. Please check server status.');
+                    return;
+                }
+
+                this.processing = true;
+                const processAllBtn = document.getElementById('processAllBtn');
+                if (processAllBtn) processAllBtn.disabled = true;
+
+                // NEW: Scroll to the progress bar when processing starts
+                document.querySelector('.processing-progress').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                this.log('🚀 Starting batch processing with NKF model...');
+                this.updateProgress(0, 'Initializing batch processing...');
+
+                try {
+                    const response = await fetch(`${this.baseURL}/api/process-all`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.error || `Server error: ${response.status}`);
+                    }
+
+                    const results = await response.json();
+
+                    this.updateProgress(100, 'Processing complete!', `Processed ${results.total_videos} videos: ${results.successful} successful, ${results.failed} failed`);
+
+                    this.log(`✅ Batch processing complete!`);
+                    this.log(`📊 Total: ${results.total_videos}, Success: ${results.successful}, Failed: ${results.failed}`);
+
+                    if (results.model_type) this.log(`🤖 Model used: ${results.model_type}`);
+
+                    this.displayBatchResults(results);
+
+                } catch (error) {
+                    this.log(`❌ Batch processing error: ${error.message}`);
+                    this.updateProgress(0, 'Error occurred', error.message);
+                    alert(`Batch processing failed: ${error.message}`);
+                } finally {
+                    this.processing = false;
+                    if (processAllBtn) processAllBtn.disabled = false;
+                }
+            }
+
+            displayBatchResults(results) {
+                const resultsContent = document.getElementById('resultsContent');
+                const resultsSection = document.getElementById('resultsSection');
+
+                if (!resultsContent || !resultsSection) return;
+
+                let html = `
+                    <div style="margin-bottom: 25px;">
+                        <div class="video-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">${results.total_videos}</div>
+                                <div class="stat-label">Total Videos</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" style="color: var(--success);">${results.successful}</div>
+                                <div class="stat-label">Successful</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" style="color: var(--danger);">${results.failed}</div>
+                                <div class="stat-label">Failed</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" style="font-size: 1.2rem; display: flex; align-items: center; justify-content: center; height: 100%;">${results.model_type || 'NKF'}</div>
+                                <div class="stat-label">Model Used</div>
+                            </div>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Processed: ${new Date(results.processed_at).toLocaleString()}</p>
+                    </div>
+                    <div style="overflow-x: auto;">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Video</th>
+                                <th>Status</th>
+                                <th>Primary Emotion</th>
+                                <th>Duration</th>
+                                <th>Face Detection</th>
+                                <th>Confidence</th>
+                                <th>Segments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                const grouped = {};
+                results.results.forEach(r => {
+                    if (!grouped[r.student]) {
+                        grouped[r.student] = {
+                            student: r.student,
+                            entries: [],
+                            success_videos: [],
+                            failed_videos: [],
+                            primary_emotion_counts: {},
+                            total_duration: 0,
+                            face_detection_values: [],
+                            timeline_segments: 0,
+                            per_video_avg_conf: []
+                        };
+                    }
+
+                    const g = grouped[r.student];
+                    g.entries.push(r);
+
+                    if (r.status === 'success') g.success_videos.push(r.video);
+                    else { g.failed_videos.push(r.video); }
+
+                    if (r.primary_emotion) {
+                        g.primary_emotion_counts[r.primary_emotion] = (g.primary_emotion_counts[r.primary_emotion] || 0) + 1;
+                    }
+
+                    if (typeof r.duration === 'number') g.total_duration += r.duration;
+
+                    if (typeof r.face_detection_rate === 'number') g.face_detection_values.push(r.face_detection_rate);
+
+                    if (Array.isArray(r.timeline)) g.timeline_segments += r.timeline.length;
+
+                    if (Array.isArray(r.timeline) && r.timeline.length > 0) {
+                        const avgConf = r.timeline.reduce((s, seg) => s + (seg.confidence || 0), 0) / r.timeline.length;
+                        g.per_video_avg_conf.push(avgConf);
+                    }
+                });
+
+                const mergedResults = Object.values(grouped);
+
+                mergedResults.forEach(g => {
+                    let videosDisplay = '-';
+                    if (g.failed_videos.length > 0) {
+                        videosDisplay = 'Error: ' + g.failed_videos.join(', ');
+                    } else if (g.success_videos.length > 1) {
+                        videosDisplay = 'All Videos';
+                    } else if (g.success_videos.length === 1) {
+                        videosDisplay = g.success_videos[0];
+                    } else {
+                        videosDisplay = g.entries.map(e => e.video).join(', ');
+                    }
+
+                    const status = g.failed_videos.length > 0 ? 'failed' : 'success';
+                    const statusColor = status === 'success' ? 'var(--success)' : 'var(--danger)';
+
+                    let primaryEmotion = '-';
+                    const emotionEntries = Object.entries(g.primary_emotion_counts);
+                    if (emotionEntries.length > 0) {
+                        emotionEntries.sort((a, b) => b[1] - a[1]);
+                        primaryEmotion = emotionEntries[0][0];
+                    }
+
+                    const durationText = g.total_duration ? parseFloat(g.total_duration.toFixed(2)) + 's' : '-';
+
+                    let faceDetectText = '-';
+                    if (g.face_detection_values.length > 0) {
+                        const avgFace = g.face_detection_values.reduce((a,b) => a + b, 0) / g.face_detection_values.length;
+                        faceDetectText = (avgFace * 100).toFixed(1) + '%';
+                    }
+
+                    let confidenceText = '-';
+                    if (g.per_video_avg_conf.length > 0) {
+                        const avgConfAcrossVideos = g.per_video_avg_conf.reduce((a,b) => a + b, 0) / g.per_video_avg_conf.length;
+                        confidenceText = avgConfAcrossVideos.toFixed(3);
+                    }
+
+                    const segmentsText = g.timeline_segments || '-';
+
+                    const emotionHTML = primaryEmotion !== '-' ? `<span class="emotion-tag">${primaryEmotion}</span>` : '-';
+
+                    html += `
+                        <tr>
+                            <td><strong>${g.student}</strong></td>
+                            <td>${videosDisplay}</td>
+                            <td style="color: ${statusColor}; font-weight: 700;">${status.toUpperCase()}</td>
+                            <td>${emotionHTML}</td>
+                            <td>${durationText}</td>
+                            <td>${faceDetectText}</td>
+                            <td>${confidenceText}</td>
+                            <td>${segmentsText}</td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table></div>';
+
+                resultsContent.innerHTML = html;
+                
+                if (resultsSection) {
+                    resultsSection.classList.remove('hidden');
+                    // NEW: Smooth scroll to results once they are printed
+                    setTimeout(() => {
+                        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            }
+
+            async viewResults() {
+                if (!this.serverOnline) {
+                    alert('Server is offline. Please check server connection first.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${this.baseURL}/api/get-results`);
+                    const resultsList = await response.json();
+
+                    if (resultsList.length === 0) {
+                        this.log('📋 No results found. Process some videos first.');
+                        return;
+                    }
+
+                    const latestResult = resultsList[0];
+                    const detailResponse = await fetch(`${this.baseURL}/api/get-result/${latestResult.filename}`);
+                    const detailData = await detailResponse.json();
+
+                    this.displayBatchResults(detailData);
+                    this.log(`📋 Loaded latest results: ${latestResult.filename}`);
+                    this.log(`   Model: ${latestResult.model_type || 'Unknown'}`);
+                    this.log(`   Processed: ${new Date(latestResult.processed_at).toLocaleString()}`);
+
+                } catch (error) {
+                    this.log(`❌ Error loading results: ${error.message}`);
+                    alert(`Failed to load results: ${error.message}`);
+                }
+            }
+
+            async exportResults() {
+                if (!this.serverOnline) {
+                    alert('Server is offline. Please check server connection first.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${this.baseURL}/api/get-results`);
+                    const resultsList = await response.json();
+
+                    if (resultsList.length === 0) {
+                        this.log('📤 No results to export');
+                        alert('No results to export. Process some videos first.');
+                        return;
+                    }
+
+                    const latestResult = resultsList[0];
+                    const detailResponse = await fetch(`${this.baseURL}/api/get-result/${latestResult.filename}`);
+                    const detailData = await detailResponse.json();
+
+                    const blob = new Blob([JSON.stringify(detailData, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `enhanced_facial_results_${new Date().toISOString().slice(0,10)}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+
+                    this.log('📤 Enhanced results exported successfully');
+
+                } catch (error) {
+                    this.log(`❌ Export error: ${error.message}`);
+                    alert(`Export failed: ${error.message}`);
+                }
+            }
+
+            updateProgress(percentage, text, details = '') {
+                const progressFill = document.getElementById('progressFill');
+                const progressText = document.getElementById('progressText');
+                const progressDetails = document.getElementById('progressDetails');
+                
+                if (progressFill) progressFill.style.width = `${percentage}%`;
+                if (progressText) progressText.textContent = text;
+                if (progressDetails) progressDetails.textContent = details;
+            }
+
+            log(message) {
+                const logOutput = document.getElementById('logOutput');
+                const logSection = document.getElementById('logSection');
+                const timestamp = new Date().toLocaleTimeString();
+
+                if (logOutput) {
+                    logOutput.innerHTML += `<span style="color: var(--primary); font-weight: 700;">[${timestamp}]</span> ${message}<br>`;
+                    logOutput.scrollTop = logOutput.scrollHeight;
+                }
+                
+                if (logSection) {
+                    logSection.classList.remove('hidden');
+                }
+
+                console.log(`[${timestamp}] ${message}`);
+            }
+
+            formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        }
+
+        const facialManager = new EnhancedFacialRecognitionManager();
+        window.facialManager = facialManager;
+
+        function setProgress(percent, statusText) {
+            facialManager.updateProgress(percent, statusText);
+        }
+
+        function addLog(message) {
+            facialManager.log(message);
+        }
+
+        function renderFolders() {
+            facialManager.renderFoldersCompatibility();
+        }
+
+        setTimeout(() => {
+            setProgress(0, "Ready To Process");
+            addLog("Enhanced Facial Recognition System initialized");
+            addLog("Ready to connect to server or use demo mode");
+            
+            setTimeout(() => {
+                if (!facialManager.serverOnline) {
+                    setProgress(100, "Demo Mode Active");
+                    addLog("Running in demo mode - connect to server for full functionality");
+                }
+            }, 3000);
+        }, 1000);
+
+    </script>
 </body>
 </html>

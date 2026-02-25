@@ -245,8 +245,8 @@ app = Flask(__name__)
 CORS(app)
 
 # Configure paths - these should be set according to your environment
-app.config['VIDEOS_FOLDER'] = r'C:\xampp\htdocs\exam\videos'  # Update this path
-app.config['RESULTS_FOLDER'] = r'C:\xampp\htdocs\exam\ml_services\facial_results'
+app.config['VIDEOS_FOLDER'] = r'C:\xampp\htdocs\exams\videos'  # Update this path
+app.config['RESULTS_FOLDER'] = r'C:\xampp\htdocs\exams\ml_services\facial_results'
 app.config['MODEL_PATH'] = './checkpoints_fer_IR50_Resnet/best_nkf_rafdb.pth'  # Update this path
 app.config['FAN_PATH'] = './checkpoints_rafdb_landmarks/best_fan_rafdb.pth'  # Update this path
 
@@ -350,9 +350,11 @@ def get_videos():
         for student_folder in os.listdir(videos_path):
             student_path = os.path.join(videos_path, student_folder)
             if os.path.isdir(student_path):
+                print(f"📂 Checking folder: {student_folder}")
                 student_videos = []
                 for video_file in os.listdir(student_path):
-                    if video_file.endswith(('.mp4', '.avi', '.mov', '.mkv', '.webm')):
+                    print(f"   📄 Found file: {video_file}")
+                    if video_file.lower().endswith(('.mp4', '.avi', '.mov', '.mkv', '.webm')):
                         video_path = os.path.join(student_path, video_file)
                         try:
                             file_size = os.path.getsize(video_path)
