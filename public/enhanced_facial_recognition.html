@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enhanced Facial Recognition</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="header"></div>
+
+    <div class="page-body">
+        <!-- Sidebar wrapper -->
+        <div id="sidebar-wrapper" class="sidebar-wrapper">
+            <div id="sidebar"></div>
+        </div>
+
+    <main class="main-content">
+
+    <!-- Top: two side-by-side cards -->
+    <div class="status-container">
+
+        <!-- System Status -->
+        <div class="card system-status">
+            <h3>System Status</h3>
+            <ul>
+                <li><strong>Server Status:</strong> <span id="serverStatus">Online</span> <span id="serverStatusText"></span></li>
+                <li><strong>Students:</strong> <span id="totalStudents">120</span></li>
+                <li><strong>Videos:</strong> <span id="totalVideos">35</span></li>
+                <li><strong>Model:</strong> <span id="modelType">Real Model</span></li>
+            </ul>
+            
+            <!-- Connection Info (will be populated by enhanced manager) -->
+            <div id="connectionInfo" class="connection-info" style="margin-top: 10px;"></div>
+            
+            <!-- Model Info (will be populated by enhanced manager) -->
+            <div id="modelInfo" class="model-info hidden" style="margin-top: 10px;"></div>
+        </div>
+
+        <!-- Processing Progress -->
+        <div class="card processing-progress">
+            <h3>Processing Progress</h3>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressFill"></div>
+                <span id="progressText">Ready To Process</span>
+            </div>
+            <div id="progressDetails" style="margin-top: 10px; font-size: 0.9em; color: #666;"></div>
+        </div>
+
+    </div> <!-- end status-container -->
+
+    <!-- Videos section -->
+    <div id="videosSection" class="card videos-container">
+        <h3>Videos</h3>
+        <div id="studentsContainer">
+            <!-- Students/folders will be loaded here by Load Videos button -->
+            <!-- This replaces the old foldersList for backward compatibility -->
+        </div>
+    </div>
+
+    <!-- Results section (hidden by default) -->
+    <div id="resultsSection" class="card results-container hidden">
+        <h3>Processing Results</h3>
+        <div id="resultsContent">
+            <!-- Results will be displayed here -->
+        </div>
+    </div>
+
+    <!-- Processing Log -->
+    <div class="card processing-log">
+        <h3>Processing Log</h3>
+        <div id="logSection" class="log-content">
+            <div id="logOutput">
+                <!-- Log messages will appear here -->
+            </div>
+        </div>
+    </div>
+
+</main>
+
+    </div>
+
+    <div id="footer"></div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

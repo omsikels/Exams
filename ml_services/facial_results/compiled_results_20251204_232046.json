@@ -1,0 +1,597 @@
+{
+  "processed_at": "2025-12-04T23:20:46.481067",
+  "total_videos": 2,
+  "successful": 2,
+  "failed": 0,
+  "model_type": "NKF",
+  "results": [
+    {
+      "student": "joshua",
+      "video": "wrong11.mp4",
+      "status": "success",
+      "timeline": [
+        {
+          "start_time": 3.36,
+          "end_time": 9.6,
+          "emotion": "Sadness",
+          "confidence": 0.7596
+        },
+        {
+          "start_time": 9.6,
+          "end_time": 12.0,
+          "emotion": "Happiness",
+          "confidence": 0.492
+        },
+        {
+          "start_time": 12.0,
+          "end_time": 12.48,
+          "emotion": "Sadness",
+          "confidence": 0.4118
+        },
+        {
+          "start_time": 12.48,
+          "end_time": 20.64,
+          "emotion": "Happiness",
+          "confidence": 0.8493
+        },
+        {
+          "start_time": 20.64,
+          "end_time": 21.12,
+          "emotion": "Neutral",
+          "confidence": 0.6747
+        },
+        {
+          "start_time": 21.12,
+          "end_time": 53.76,
+          "emotion": "Happiness",
+          "confidence": 0.896
+        },
+        {
+          "start_time": 53.76,
+          "end_time": 55.2,
+          "emotion": "Neutral",
+          "confidence": 0.6196
+        },
+        {
+          "start_time": 55.2,
+          "end_time": 56.16,
+          "emotion": "Sadness",
+          "confidence": 0.447
+        },
+        {
+          "start_time": 56.16,
+          "end_time": 57.12,
+          "emotion": "Happiness",
+          "confidence": 0.4922
+        },
+        {
+          "start_time": 57.12,
+          "end_time": 61.44,
+          "emotion": "Sadness",
+          "confidence": 0.7561
+        },
+        {
+          "start_time": 61.44,
+          "end_time": 62.4,
+          "emotion": "Neutral",
+          "confidence": 0.7227
+        },
+        {
+          "start_time": 62.4,
+          "end_time": 62.88,
+          "emotion": "Sadness",
+          "confidence": 0.5002
+        },
+        {
+          "start_time": 62.88,
+          "end_time": 63.84,
+          "emotion": "Surprise",
+          "confidence": 0.688
+        },
+        {
+          "start_time": 63.84,
+          "end_time": 64.32,
+          "emotion": "Fear",
+          "confidence": 0.3286
+        },
+        {
+          "start_time": 64.32,
+          "end_time": 64.8,
+          "emotion": "Sadness",
+          "confidence": 0.8274
+        },
+        {
+          "start_time": 64.8,
+          "end_time": 65.76,
+          "emotion": "Surprise",
+          "confidence": 0.4586
+        },
+        {
+          "start_time": 65.76,
+          "end_time": 66.72,
+          "emotion": "Fear",
+          "confidence": 0.8125
+        },
+        {
+          "start_time": 66.72,
+          "end_time": 67.2,
+          "emotion": "Surprise",
+          "confidence": 0.5367
+        },
+        {
+          "start_time": 67.2,
+          "end_time": 67.68,
+          "emotion": "Happiness",
+          "confidence": 0.7704
+        },
+        {
+          "start_time": 67.68,
+          "end_time": 68.64,
+          "emotion": "Sadness",
+          "confidence": 0.5848
+        },
+        {
+          "start_time": 68.64,
+          "end_time": 72.0,
+          "emotion": "Surprise",
+          "confidence": 0.7741
+        },
+        {
+          "start_time": 72.0,
+          "end_time": 72.96,
+          "emotion": "Sadness",
+          "confidence": 0.6574
+        },
+        {
+          "start_time": 72.96,
+          "end_time": 80.64,
+          "emotion": "Surprise",
+          "confidence": 0.6551
+        },
+        {
+          "start_time": 80.64,
+          "end_time": 83.04,
+          "emotion": "Sadness",
+          "confidence": 0.6396
+        },
+        {
+          "start_time": 83.04,
+          "end_time": 84.96,
+          "emotion": "Surprise",
+          "confidence": 0.8714
+        },
+        {
+          "start_time": 84.96,
+          "end_time": 85.44,
+          "emotion": "Happiness",
+          "confidence": 0.704
+        },
+        {
+          "start_time": 85.44,
+          "end_time": 85.92,
+          "emotion": "Surprise",
+          "confidence": 0.2596
+        },
+        {
+          "start_time": 85.92,
+          "end_time": 86.4,
+          "emotion": "Anger",
+          "confidence": 0.307
+        },
+        {
+          "start_time": 86.4,
+          "end_time": 86.88,
+          "emotion": "Happiness",
+          "confidence": 0.5676
+        },
+        {
+          "start_time": 86.88,
+          "end_time": 88.32,
+          "emotion": "Disgust",
+          "confidence": 0.7263
+        },
+        {
+          "start_time": 88.32,
+          "end_time": 88.8,
+          "emotion": "Sadness",
+          "confidence": 0.5838
+        },
+        {
+          "start_time": 88.8,
+          "end_time": 92.16,
+          "emotion": "Disgust",
+          "confidence": 0.5062
+        },
+        {
+          "start_time": 92.16,
+          "end_time": 94.08,
+          "emotion": "Neutral",
+          "confidence": 0.6551
+        },
+        {
+          "start_time": 94.08,
+          "end_time": 95.52,
+          "emotion": "Sadness",
+          "confidence": 0.5519
+        },
+        {
+          "start_time": 95.52,
+          "end_time": 96.48,
+          "emotion": "Disgust",
+          "confidence": 0.712
+        },
+        {
+          "start_time": 96.48,
+          "end_time": 98.88,
+          "emotion": "Sadness",
+          "confidence": 0.8048
+        },
+        {
+          "start_time": 98.88,
+          "end_time": 99.36,
+          "emotion": "Neutral",
+          "confidence": 0.4714
+        },
+        {
+          "start_time": 99.36,
+          "end_time": 99.84,
+          "emotion": "Sadness",
+          "confidence": 0.3417
+        },
+        {
+          "start_time": 99.84,
+          "end_time": 100.32,
+          "emotion": "Disgust",
+          "confidence": 0.7324
+        },
+        {
+          "start_time": 100.32,
+          "end_time": 100.8,
+          "emotion": "Sadness",
+          "confidence": 0.4374
+        },
+        {
+          "start_time": 100.8,
+          "end_time": 101.76,
+          "emotion": "Neutral",
+          "confidence": 0.6526
+        },
+        {
+          "start_time": 101.76,
+          "end_time": 104.64,
+          "emotion": "Sadness",
+          "confidence": 0.7438
+        },
+        {
+          "start_time": 104.64,
+          "end_time": 107.04,
+          "emotion": "Anger",
+          "confidence": 0.834
+        },
+        {
+          "start_time": 107.04,
+          "end_time": 112.32,
+          "emotion": "Sadness",
+          "confidence": 0.7095
+        },
+        {
+          "start_time": 112.32,
+          "end_time": 113.28,
+          "emotion": "Disgust",
+          "confidence": 0.5653
+        },
+        {
+          "start_time": 113.28,
+          "end_time": 117.12,
+          "emotion": "Sadness",
+          "confidence": 0.9103
+        },
+        {
+          "start_time": 117.12,
+          "end_time": 121.44,
+          "emotion": "Neutral",
+          "confidence": 0.5862
+        },
+        {
+          "start_time": 121.44,
+          "end_time": 121.92,
+          "emotion": "Anger",
+          "confidence": 0.574
+        },
+        {
+          "start_time": 121.92,
+          "end_time": 123.36,
+          "emotion": "Disgust",
+          "confidence": 0.5835
+        },
+        {
+          "start_time": 123.36,
+          "end_time": 123.84,
+          "emotion": "Anger",
+          "confidence": 0.4485
+        },
+        {
+          "start_time": 123.84,
+          "end_time": 127.2,
+          "emotion": "Sadness",
+          "confidence": 0.9277
+        },
+        {
+          "start_time": 127.2,
+          "end_time": 130.08,
+          "emotion": "Disgust",
+          "confidence": 0.5043
+        },
+        {
+          "start_time": 130.08,
+          "end_time": 132.96,
+          "emotion": "Sadness",
+          "confidence": 0.9157
+        },
+        {
+          "start_time": 132.96,
+          "end_time": 133.44,
+          "emotion": "Neutral",
+          "confidence": 0.4491
+        },
+        {
+          "start_time": 133.44,
+          "end_time": 134.88,
+          "emotion": "Surprise",
+          "confidence": 0.6657
+        },
+        {
+          "start_time": 134.88,
+          "end_time": 135.36,
+          "emotion": "Neutral",
+          "confidence": 0.4585
+        },
+        {
+          "start_time": 135.36,
+          "end_time": 137.28,
+          "emotion": "Surprise",
+          "confidence": 0.5772
+        },
+        {
+          "start_time": 137.28,
+          "end_time": 140.64,
+          "emotion": "Sadness",
+          "confidence": 0.8684
+        },
+        {
+          "start_time": 140.64,
+          "end_time": 144.48,
+          "emotion": "Surprise",
+          "confidence": 0.7571
+        },
+        {
+          "start_time": 144.48,
+          "end_time": 168.96,
+          "emotion": "Sadness",
+          "confidence": 0.8864
+        },
+        {
+          "start_time": 168.96,
+          "end_time": 172.8,
+          "emotion": "Surprise",
+          "confidence": 0.7966
+        },
+        {
+          "start_time": 172.8,
+          "end_time": 173.28,
+          "emotion": "Neutral",
+          "confidence": 0.3368
+        },
+        {
+          "start_time": 173.28,
+          "end_time": 173.76,
+          "emotion": "Surprise",
+          "confidence": 0.7049
+        },
+        {
+          "start_time": 173.76,
+          "end_time": 174.24,
+          "emotion": "Neutral",
+          "confidence": 0.3748
+        },
+        {
+          "start_time": 174.24,
+          "end_time": 174.72,
+          "emotion": "Surprise",
+          "confidence": 0.6987
+        },
+        {
+          "start_time": 174.72,
+          "end_time": 185.84,
+          "emotion": "Sadness",
+          "confidence": 0.9348
+        }
+      ],
+      "statistics": {
+        "Surprise": 15.84,
+        "Fear": 0.88,
+        "Disgust": 5.87,
+        "Happiness": 21.7,
+        "Sadness": 45.75,
+        "Anger": 2.35,
+        "Neutral": 7.62
+      },
+      "primary_emotion": "Sadness",
+      "total_frames": 4646,
+      "fps": 25,
+      "duration": 185.84,
+      "face_detection_rate": 0.8834,
+      "faces_detected": 341,
+      "model_type": "NKF",
+      "processed_at": "2025-12-04T23:20:12.132152"
+    },
+    {
+      "student": "joshua",
+      "video": "wrong12.mp4",
+      "status": "success",
+      "timeline": [
+        {
+          "start_time": 0.48,
+          "end_time": 6.72,
+          "emotion": "Happiness",
+          "confidence": 0.3496
+        },
+        {
+          "start_time": 6.72,
+          "end_time": 7.2,
+          "emotion": "Neutral",
+          "confidence": 0.7021
+        },
+        {
+          "start_time": 7.2,
+          "end_time": 7.68,
+          "emotion": "Sadness",
+          "confidence": 0.5081
+        },
+        {
+          "start_time": 7.68,
+          "end_time": 8.64,
+          "emotion": "Neutral",
+          "confidence": 0.7392
+        },
+        {
+          "start_time": 8.64,
+          "end_time": 9.12,
+          "emotion": "Sadness",
+          "confidence": 0.7341
+        },
+        {
+          "start_time": 9.12,
+          "end_time": 9.6,
+          "emotion": "Surprise",
+          "confidence": 0.4581
+        },
+        {
+          "start_time": 9.6,
+          "end_time": 21.6,
+          "emotion": "Neutral",
+          "confidence": 0.6696
+        },
+        {
+          "start_time": 21.6,
+          "end_time": 22.08,
+          "emotion": "Disgust",
+          "confidence": 0.9007
+        },
+        {
+          "start_time": 22.08,
+          "end_time": 22.56,
+          "emotion": "Happiness",
+          "confidence": 0.5826
+        },
+        {
+          "start_time": 22.56,
+          "end_time": 34.08,
+          "emotion": "Neutral",
+          "confidence": 0.7744
+        },
+        {
+          "start_time": 34.08,
+          "end_time": 34.56,
+          "emotion": "Sadness",
+          "confidence": 0.5186
+        },
+        {
+          "start_time": 34.56,
+          "end_time": 49.44,
+          "emotion": "Neutral",
+          "confidence": 0.7987
+        },
+        {
+          "start_time": 49.44,
+          "end_time": 50.4,
+          "emotion": "Happiness",
+          "confidence": 0.6918
+        },
+        {
+          "start_time": 50.4,
+          "end_time": 62.88,
+          "emotion": "Neutral",
+          "confidence": 0.8097
+        },
+        {
+          "start_time": 62.88,
+          "end_time": 64.32,
+          "emotion": "Sadness",
+          "confidence": 0.8205
+        },
+        {
+          "start_time": 64.32,
+          "end_time": 65.28,
+          "emotion": "Neutral",
+          "confidence": 0.5484
+        },
+        {
+          "start_time": 65.28,
+          "end_time": 75.36,
+          "emotion": "Anger",
+          "confidence": 0.311
+        },
+        {
+          "start_time": 75.36,
+          "end_time": 78.24,
+          "emotion": "Neutral",
+          "confidence": 0.8933
+        },
+        {
+          "start_time": 78.24,
+          "end_time": 78.72,
+          "emotion": "Sadness",
+          "confidence": 0.4215
+        },
+        {
+          "start_time": 78.72,
+          "end_time": 83.04,
+          "emotion": "Neutral",
+          "confidence": 0.8317
+        },
+        {
+          "start_time": 83.04,
+          "end_time": 90.24,
+          "emotion": "Surprise",
+          "confidence": 0.4413
+        },
+        {
+          "start_time": 90.24,
+          "end_time": 90.72,
+          "emotion": "Sadness",
+          "confidence": 0.4952
+        },
+        {
+          "start_time": 90.72,
+          "end_time": 107.04,
+          "emotion": "Neutral",
+          "confidence": 0.7322
+        },
+        {
+          "start_time": 107.04,
+          "end_time": 114.56,
+          "emotion": "Sadness",
+          "confidence": 0.7953
+        }
+      ],
+      "statistics": {
+        "Surprise": 2.86,
+        "Fear": 0.0,
+        "Disgust": 1.43,
+        "Happiness": 5.71,
+        "Sadness": 12.86,
+        "Anger": 8.57,
+        "Neutral": 68.57
+      },
+      "primary_emotion": "Neutral",
+      "total_frames": 2864,
+      "fps": 25,
+      "duration": 114.56,
+      "face_detection_rate": 0.2941,
+      "faces_detected": 70,
+      "model_type": "NKF",
+      "processed_at": "2025-12-04T23:20:46.480209"
+    }
+  ]
+}

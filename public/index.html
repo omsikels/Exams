@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Exam 3000</title>
+    <style>
+        :root {
+            --bg-color: #cbbde5; 
+            --border-color: #000000;
+            --border-width: 4px;
+            --font-family: Arial, Helvetica, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            color: #000;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden; /* Prevent scrollbars when dragging */
+        }
+
+        /* -------------------------
+           LANDING PAGE STYLES
+           ------------------------- */
+        .landing-container {
+            background: var(--bg-color);
+            border: var(--border-width) solid var(--border-color);
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
+        }
+
+        .landing-container h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+
+        .landing-container label {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+
+        .landing-container input {
+            background: #fff;
+            border: var(--border-width) solid var(--border-color);
+            padding: 12px 16px;
+            margin-top: 8px;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .landing-container input:focus {
+            outline: none;
+            background: #e8e4f1;
+        }
+
+        .action-btn {
+            background: #fff;
+            border: var(--border-width) solid var(--border-color);
+            color: #000;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 12px 30px;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: #e0e0e0;
+        }
+
+        /* -------------------------
+           EXAM INTERFACE STYLES
+           ------------------------- */
+        .exam-container {
+            width: 100%;
+            max-width: 1200px;
+            min-height: calc(100vh - 40px);
+            border: 6px solid var(--border-color);
+            background-color: var(--bg-color);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .title-area { flex: 1; }
+        .title-area strong { font-size: 1.2rem; display: block; }
+        .title-area em { font-size: 1rem; }
+
+        .progress-wrapper {
+            flex: 2;
+            border: var(--border-width) solid var(--border-color);
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #e0d8f0;
+        }
+        
+        .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: rgba(0,0,0,0.1);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            position: relative;
+            z-index: 1;
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        .timer-box {
+            border: var(--border-width) solid var(--border-color);
+            padding: 15px 30px;
+            text-align: center;
+            font-weight: bold;
+            background: var(--bg-color);
+            min-width: 150px;
+        }
+
+        .content-box {
+            border: 5px solid var(--border-color);
+            flex-grow: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+        }
+
+        .question-number {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 40px;
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-grow: 1;
+        }
+
+        .choice-item {
+            border: var(--border-width) solid var(--border-color);
+            padding: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: bold;
+            cursor: pointer;
+            background: #d8cdec;
+            transition: background 0.2s;
+        }
+
+        .choice-item:hover {
+            background: #c8b9e0;
+        }
+
+        .choice-item.selected {
+            background: #a996cc;
+            box-shadow: inset 0 0 0 2px #000;
+        }
+
+        .footer-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* -------------------------
+           FLOATING CAMERA STYLES
+           ------------------------- */
+        .floating-camera {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 240px;
+            background: #fff;
+            border: var(--border-width) solid var(--border-color);
+            z-index: 1000;
+            display: none; /* Hidden until exam starts */
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.2);
+            flex-direction: column;
+        }
+
+        .camera-header {
+            background: var(--border-color);
+            color: #fff;
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .camera-header:active {
+            cursor: grabbing;
+        }
+
+        #cameraFeed {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #000; /* Black background while loading */
+        }
+
+        /* Result Screen */
+        #result-screen {
+            text-align: center;
+            padding: 40px;
+        }
+        #result-screen h2 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            .header-row { flex-direction: column; align-items: stretch; text-align: center; }
+            .content-box { padding: 15px; }
+            .exam-container { padding: 15px; }
+            .floating-camera { width: 150px; bottom: 10px; right: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="landing-container" id="landing-container">
+        <h1>EXAM 3000</h1>
+        <div id="start-screen">
+            <label>Your Name: 
+                <input id="username" placeholder="Enter your name" />
+            </label>
+            <button id="startBtn" class="action-btn">Start Exam</button>
+        </div>
+    </div>
+
+    <div class="floating-camera" id="cameraWindow">
+        <div class="camera-header" id="cameraHeader">:: DRAG ::</div>
+        <video id="cameraFeed" autoplay muted></video>
+    </div>
+
+    <div class="exam-container" id="exam-container" style="display:none">
+        <div id="exam-screen" style="display: flex; flex-direction: column; flex-grow: 1;">
+            
+            <div class="header-row">
+                <div class="title-area">
+                    <strong>Exam 3000</strong>
+                    <em>Enhanced Facial Recognition</em>
+                </div>
+                
+                <div class="progress-wrapper">
+                    <div class="progress-fill" id="progressFill"></div>
+                    <div class="progress-text" id="progressText">Progression Bar</div>
+                </div>
+                
+                <div class="timer-box">
+                    <em>Time Left:</em><br>
+                    <span id="timeLeftStr">--:-- Mins</span>
+                </div>
+            </div>
+
+            <div class="content-box">
+                <div class="question-number" id="questionNumber">Question 1</div>
+                
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="choices" id="choicesContainer">
+                    </div>
+            </div>
+
+            <div class="footer-row">
+                <button id="submitBtn" class="action-btn">SUBMIT</button>
+            </div>
+            
+        </div>
+
+        <div id="result-screen" style="display: none; flex-grow: 1;">
+            <h2>Exam Finished</h2>
+            <div id="summary" style="font-size: 1.2rem; line-height: 1.6;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Transition from landing page to exam interface
+        document.getElementById('startBtn').addEventListener('click', function() {
+            const username = document.getElementById('username').value.trim();
+            
+            if (username === '') {
+                alert('Please enter your name before starting the exam.');
+                return;
+            }
+            
+            document.getElementById('landing-container').style.display = 'none';
+            document.getElementById('exam-container').style.display = 'flex';
+            
+            startActualExam();
+        });
+
+        // Main Exam Logic
+        (async function(){
+            const usernameInput = document.getElementById('username');
+            const examScreen = document.getElementById('exam-screen');
+            const resultScreen = document.getElementById('result-screen');
+            const summary = document.getElementById('summary');
+            
+            const questionNumberEl = document.getElementById('questionNumber');
+            const questionTextEl = document.getElementById('questionText');
+            const choicesContainer = document.getElementById('choicesContainer');
+            const timerStrEl = document.getElementById('timeLeftStr');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const cameraFeed = document.getElementById('cameraFeed');
+            const cameraWindow = document.getElementById('cameraWindow');
+            const submitBtn = document.getElementById('submitBtn');
+
+            let questionData;
+            let questions;
+            let currentIndex = 0;
+            let username = '';
+            let questionRemaining = 0;
+            let questionTimerId = null;
+            let mediaStream = null;
+            let recorder = null;
+            let recordedChunks = [];
+            let currentSelectedAnswer = null;
+
+            // Load questions
+            try {
+                questionData = await (await fetch('/api/questions')).json();
+                if (!questionData.questions || !questionData.questions.length) {
+                    throw new Error("No questions from API");
+                }
+                questions = questionData.questions;
+            } catch (error) {
+                console.error('Failed to load questions, using fallbacks:', error);
+                questions = [
+                    {
+                        text: "This is just an example to tell Pantas that I still don't want to do this right now because of the gravity of the earth. Also Neil's part is not also done so I'm frustrated for real for real.",
+                        choices: ["OPTION 1", "OPTION 2", "OPTION 3", "OPTION 4"],
+                        correctIndex: 1,
+                        timeSeconds: 332
+                    },
+                    {
+                        text: "What is the value of the digit 6 in 56,783?",
+                        choices: ["6", "60", "600", "6,000"],
+                        correctIndex: 3,
+                        timeSeconds: 60
+                    }
+                ];
+            }
+
+            // Start Exam
+            window.startActualExam = async function() {
+                username = usernameInput.value.trim();
+                
+                try {
+                    // Start camera
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                    cameraFeed.srcObject = mediaStream;
+                    
+                    // Show floating window once camera is approved
+                    cameraWindow.style.display = 'flex';
+                    
+                    showQuestion(0);
+                } catch (e){
+                    alert('Camera access required for Enhanced Facial Recognition. Please allow access.');
+                    return;
+                }
+            }
+
+            function showQuestion(i){
+                if (i >= questions.length) return finishExam('Completed');
+                
+                currentIndex = i;
+                currentSelectedAnswer = null; 
+                const q = questions[i];
+                
+                // Progress Bar
+                const progressPct = ((i) / questions.length) * 100;
+                progressFill.style.width = `${progressPct}%`;
+                progressText.textContent = `Progress: ${i} / ${questions.length}`;
+
+                if (questionTimerId) clearInterval(questionTimerId);
+
+                questionRemaining = q.timeSeconds || 60;
+                updateTimerDisplay();
+
+                questionNumberEl.textContent = `Question ${i+1}`;
+                questionTextEl.textContent = q.text;
+
+                choicesContainer.innerHTML = '';
+                q.choices.forEach((choice, idx) => {
+                    const choiceDiv = document.createElement('div');
+                    choiceDiv.className = 'choice-item';
+                    choiceDiv.textContent = choice;
+                    
+                    choiceDiv.addEventListener('click', () => {
+                        document.querySelectorAll('.choice-item').forEach(el => el.classList.remove('selected'));
+                        choiceDiv.classList.add('selected');
+                        currentSelectedAnswer = idx;
+                    });
+                    
+                    choicesContainer.appendChild(choiceDiv);
+                });
+
+                questionTimerId = setInterval(() => {
+                    questionRemaining -= 1;
+                    updateTimerDisplay();
+                    
+                    if (questionRemaining <= 0) {
+                        clearInterval(questionTimerId);
+                        autoAdvanceQuestion();
+                    }
+                }, 1000);
+
+                startRecording();
+            }
+
+            function updateTimerDisplay() {
+                const minutes = Math.floor(questionRemaining / 60);
+                const seconds = questionRemaining % 60;
+                timerStrEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')} Mins`;
+            }
+
+            submitBtn.addEventListener('click', async () => {
+                if (currentSelectedAnswer === null) {
+                    alert('Please select an option before submitting.');
+                    return;
+                }
+                
+                if (questionTimerId) clearInterval(questionTimerId);
+
+                const q = questions[currentIndex];
+                const isCorrect = currentSelectedAnswer === Number(q.correctIndex);
+
+                if (recorder && recorder.state !== 'inactive') {
+                    await stopRecorderAndUpload(isCorrect);
+                }
+                
+                showQuestion(currentIndex + 1);
+            });
+
+            async function autoAdvanceQuestion() {
+                if (recorder && recorder.state !== 'inactive') {
+                    await stopRecorderAndUpload(false);
+                }
+                setTimeout(() => {
+                    showQuestion(currentIndex + 1);
+                }, 500);
+            }
+
+            function startRecording(){
+                recordedChunks = [];
+                try {
+                    recorder = new MediaRecorder(mediaStream, {mimeType: 'video/webm; codecs=vp9' });
+                } catch (e) {
+                    recorder = new MediaRecorder(mediaStream);
+                }
+                recorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
+                recorder.start();
+            }
+
+            function stopRecorderAndUpload(isCorrect){
+                return new Promise(resolve => {
+                    recorder.onstop = async () => {
+                        const blob = new Blob(recordedChunks, { type: 'video/webm'});
+                        
+                        const fd = new FormData();
+                        fd.append('username', username);
+                        fd.append('questionIndex', String(currentIndex+1));
+                        fd.append('result', isCorrect ? 'Correct' : 'Wrong');
+                        fd.append('video', blob, 'clip.webm');
+
+                        try {
+                            await fetch('/api/upload-video', { method:'POST', body: fd});
+                        } catch(e){ 
+                            console.error('upload failed', e); 
+                        }
+                        resolve();
+                    };
+                    recorder.stop();
+                });
+            }
+
+            function finishExam(reason){
+                if (recorder && recorder.state !== 'inactive') recorder.stop();
+                if (mediaStream) mediaStream.getTracks().forEach(t=>t.stop());
+                if (questionTimerId) clearInterval(questionTimerId);
+
+                // Hide camera window when exam is done
+                cameraWindow.style.display = 'none';
+                examScreen.style.display = 'none';
+                resultScreen.style.display = 'block';
+                
+                const totalQuestions = questions.length;
+                const completionMessage = reason === 'Completed' 
+                    ? `You completed all ${totalQuestions} questions!`
+                    : `Exam finished (${reason})`;
+                    
+                summary.innerHTML = `
+                    <p>${completionMessage}</p>
+                    <p style="margin-top: 15px;">Your background videos were successfully uploaded to the designated directory.</p>
+                `;
+            }
+
+            // -------------------------
+            // DRAGGABLE WINDOW LOGIC
+            // -------------------------
+            const cameraHeader = document.getElementById('cameraHeader');
+            let isDragging = false;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+            let xOffset = 0;
+            let yOffset = 0;
+
+            cameraHeader.addEventListener('mousedown', dragStart);
+            document.addEventListener('mouseup', dragEnd);
+            document.addEventListener('mousemove', drag);
+
+            // Touch support for mobile devices
+            cameraHeader.addEventListener('touchstart', dragStart, {passive: false});
+            document.addEventListener('touchend', dragEnd);
+            document.addEventListener('touchmove', drag, {passive: false});
+
+            function dragStart(e) {
+                if (e.type === "touchstart") {
+                    initialX = e.touches[0].clientX - xOffset;
+                    initialY = e.touches[0].clientY - yOffset;
+                } else {
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+                }
+                
+                if (e.target === cameraHeader) {
+                    isDragging = true;
+                }
+            }
+
+            function dragEnd(e) {
+                initialX = currentX;
+                initialY = currentY;
+                isDragging = false;
+            }
+
+            function drag(e) {
+                if (isDragging) {
+                    e.preventDefault(); // Prevents scrolling while dragging on touch screens
+                    
+                    if (e.type === "touchmove") {
+                        currentX = e.touches[0].clientX - initialX;
+                        currentY = e.touches[0].clientY - initialY;
+                    } else {
+                        currentX = e.clientX - initialX;
+                        currentY = e.clientY - initialY;
+                    }
+
+                    xOffset = currentX;
+                    yOffset = currentY;
+
+                    setTranslate(currentX, currentY, cameraWindow);
+                }
+            }
+
+            function setTranslate(xPos, yPos, el) {
+                el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+            }
+
+        })();
+    </script>
+</body>    
+</html>

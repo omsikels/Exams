@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Enhanced Facial Expression Recognition</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%); color: white; padding: 25px; text-align: center; position: relative; }
+        .server-status { position: absolute; top: 20px; right: 25px; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .status-online { background: #27ae60; color: white; } .status-offline { background: #e74c3c; color: white; } .status-loading { background: #f39c12; color: white; }
+        .content { padding: 30px; }
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; margin-bottom: 30px; }
+        .card { background: #f8f9fa; border-radius: 12px; padding: 25px; border: 1px solid #e9ecef; transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .card h3 { color: #2c3e50; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 3px solid #3498db; font-size: 1.2em; }
+        .btn { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; margin: 5px; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: linear-gradient(135deg, #2980b9 0%, #3498db 100%); transform: translateY(-1px); }
+        .btn:disabled { background: #bdc3c7; cursor: not-allowed; transform: none; }
+        .btn-success { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); } .btn-success:hover { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
+        .btn-warning { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); color: white; } .btn-danger { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+        
+        /* IMPROVED STUDENT LIST STYLES */
+        .students-list { display: flex; flex-direction: column; gap: 12px; }
+        .student-item { 
+            background: white; 
+            border-radius: 12px; 
+            border: 2px solid #e9ecef; 
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .student-item:hover { border-color: #3498db; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.1); }
+        .student-item.expanded { border-color: #3498db; box-shadow: 0 6px 20px rgba(52, 152, 219, 0.15); }
+        
+        .student-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: background-color 0.2s;
+        }
+        .student-header:hover { background: #f8f9fa; }
+        .student-item.expanded .student-header { background: #f0f7ff; }
+        
+        .student-info { display: flex; align-items: center; gap: 15px; }
+        .student-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .student-details h4 {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        .student-meta {
+            color: #7f8c8d;
+            font-size: 14px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .expand-icon {
+            font-size: 20px;
+            color: #7f8c8d;
+            transition: transform 0.3s ease;
+        }
+        .student-item.expanded .expand-icon { transform: rotate(180deg); }
+        
+        .student-videos {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s ease;
+        }
+        .student-item.expanded .student-videos {
+            max-height: 800px;
+            padding: 0 20px 20px 20px;
+        }
+        
+        .videos-header {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .videos-header h5 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+        .video-card {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.2s;
+        }
+        .video-card:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            border-color: #3498db;
+        }
+        
+        .video-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .video-details h6 {
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .video-size {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        
+        .video-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+        
+        .progress-bar { width: 100%; height: 25px; background: #e9ecef; border-radius: 15px; overflow: hidden; margin: 15px 0; position: relative; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #27ae60 0%, #2ecc71 50%, #27ae60 100%); transition: width 0.5s ease; border-radius: 15px; }
+        .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 600; color: #2c3e50; font-size: 12px; }
+        .results-table { width: 100%; border-collapse: collapse; margin-top: 25px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .results-table th, .results-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .results-table th { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; font-weight: 600; }
+        .results-table tr:hover { background: #f8f9fa; }
+        .emotion-tag { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; padding: 4px 12px; border-radius: 15px; font-size: 12px; font-weight: 600; }
+        .emotion-happiness { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); } .emotion-sadness { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); } .emotion-anger { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); } .emotion-fear { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); } .emotion-surprise { background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); } .emotion-disgust { background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); } .emotion-neutral { background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%); }
+        .log-output { background: #2c3e50; color: #2ecc71; padding: 20px; border-radius: 12px; font-family: 'Courier New', monospace; max-height: 350px; overflow-y: auto; margin-top: 20px; border: 1px solid #34495e; }
+        .hidden { display: none; }
+        .status-indicator { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 15px; font-size: 13px; font-weight: 600; }
+        .status-ready { background: #d5f4e6; color: #27ae60; border: 1px solid #27ae60; } .status-error { background: #ffeaea; color: #e74c3c; border: 1px solid #e74c3c; } .status-offline { background: #f4f4f4; color: #7f8c8d; border: 1px solid #7f8c8d; }
+        .connection-info { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 1px solid #2196f3; padding: 20px; border-radius: 12px; margin: 25px 0; }
+        .error-message { background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border: 1px solid #f44336; color: #c62828; padding: 20px; border-radius: 12px; margin: 20px 0; }
+        .success-message { background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); border: 1px solid #4caf50; color: #2e7d32; padding: 20px; border-radius: 12px; margin: 20px 0; }
+        .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #ffffff; border-radius: 50%; border-top-color: transparent; animation: spin 1s ease-in-out infinite; } @keyframes spin { to { transform: rotate(360deg); } }
+        .model-info { background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border: 1px solid #9c27b0; padding: 20px; border-radius: 12px; margin: 20px 0; }
+        .video-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 15px 0; }
+        .stat-item { text-align: center; padding: 15px; background: white; border-radius: 8px; border: 1px solid #e0e0e0; }
+        .stat-value { font-size: 1.5em; font-weight: bold; color: #3498db; } .stat-label { font-size: 0.9em; color: #7f8c8d; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="server-status" id="serverStatus">
+                <span class="spinner"></span>
+                Checking...
+            </div>
+            <h1>🎭 Enhanced Facial Expression Recognition</h1>
+            <p>AI-Powered Emotion Detection with Real NKF Model</p>
+        </div>
+
+        <div class="content">
+            <div id="connectionInfo" class="connection-info">
+                <h4>🔗 Server Connection</h4>
+                <p>Connecting to enhanced facial recognition server at <code>http://localhost:5001</code>...</p>
+                <p>Make sure the server is running with: <code>python enhanced_facial_recognition_server.py</code></p>
+            </div>
+
+            <div id="modelInfo" class="model-info hidden">
+                <h4>🤖 Model Information</h4>
+                <p id="modelDetails"></p>
+            </div>
+
+            <div class="dashboard">
+                <div class="card">
+                    <h3>📊 System Status</h3>
+                    <div id="systemStats">
+                        <div class="video-stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="serverStatusText">-</div>
+                                <div class="stat-label">Server Status</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="totalStudents">-</div>
+                                <div class="stat-label">Students</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="totalVideos">-</div>
+                                <div class="stat-label">Videos</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="modelType">-</div>
+                                <div class="stat-label">Model</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🎬 Processing Controls</h3>
+                    <button id="checkServerBtn" class="btn">🔍 Check Server Status</button>
+                    <button id="loadVideosBtn" class="btn" disabled>📁 Load Videos</button>
+                    <button id="processAllBtn" class="btn btn-success" disabled>🚀 Process All Videos</button>
+                    <button id="viewResultsBtn" class="btn btn-warning">📋 View Latest Results</button>
+                    <button id="exportResultsBtn" class="btn">📤 Export Results</button>
+                </div>
+
+                <div class="card">
+                    <h3>⏱️ Processing Progress</h3>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill" style="width:0%"></div>
+                        <div class="progress-text" id="progressText">Ready to process</div>
+                    </div>
+                    <p id="progressDetails" style="margin-top:10px;font-size:0.9em;color:#7f8c8d;"></p>
+                </div>
+            </div>
+
+            <div id="videosSection" class="card hidden">
+                <h3>🎥 Student Videos</h3>
+                <div id="studentsContainer" class="students-list"></div>
+            </div>
+
+            <div id="logSection" class="card hidden">
+                <h3>📝 Processing Log</h3>
+                <div id="logOutput" class="log-output"></div>
+            </div>
+
+            <div id="resultsSection" class="card hidden">
+                <h3>📈 Processing Results</h3>
+                <div id="resultsContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class EnhancedFacialRecognitionManager {
+            constructor() {
+                this.baseURL = 'http://localhost:5001';
+                this.videos = {};
+                this.processing = false;
+                this.serverOnline = false;
+                this.modelLoaded = false;
+                this.expandedStudent = null;
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+                this.checkServerStatus();
+                setInterval(() => this.checkServerStatus(), 30000);
+            }
+
+            bindEvents() {
+                document.getElementById('checkServerBtn').addEventListener('click', () => this.checkServerStatus());
+                document.getElementById('loadVideosBtn').addEventListener('click', () => this.loadVideos());
+                document.getElementById('processAllBtn').addEventListener('click', () => this.processAllVideos());
+                document.getElementById('viewResultsBtn').addEventListener('click', () => this.viewResults());
+                document.getElementById('exportResultsBtn').addEventListener('click', () => this.exportResults());
+            }
+
+            async checkServerStatus() {
+                const statusElement = document.getElementById('serverStatus');
+                const statusTextElement = document.getElementById('serverStatusText');
+                const connectionInfo = document.getElementById('connectionInfo');
+                const modelInfo = document.getElementById('modelInfo');
+
+                this.log('🔍 Checking enhanced server status...');
+
+                try {
+                    const response = await fetch(`${this.baseURL}/health`, {
+                        method: 'GET',
+                        headers: { 'Accept': 'application/json' },
+                        signal: AbortSignal.timeout(10000)
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.serverOnline = true;
+                        this.modelLoaded = data.model_loaded;
+
+                        statusElement.className = 'server-status status-online';
+                        statusElement.innerHTML = '✅ Online';
+                        statusTextElement.innerHTML = this.modelLoaded ? '✅ Ready' : '⚠️ No Model';
+
+                        document.getElementById('modelType').textContent = data.mode || 'Enhanced';
+
+                        connectionInfo.innerHTML = `
+                            <h4>🔗 Server Connection - Online</h4>
+                            <p>✅ Connected to ${data.service}</p>
+                            <p>🤖 Model Status: ${this.modelLoaded ? 'Loaded ✅' : 'Not Loaded ⚠️'}</p>
+                            <p>🎭 Detection: ${data.face_detection || 'OpenCV'}</p>
+                            <p>💻 Device: ${data.device || 'CPU'}</p>
+                        `;
+                        connectionInfo.className = 'connection-info';
+                        connectionInfo.style.background = 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)';
+                        connectionInfo.style.borderColor = '#28a745';
+
+                        if (this.modelLoaded) {
+                            modelInfo.innerHTML = `
+                                <h4>🤖 NKF Model Information</h4>
+                                <p>✅ Enhanced Neural Keypoint Features (NKF) model is loaded</p>
+                                <p>🎯 Real emotion detection with landmark-based features</p>
+                                <p>📊 7 emotion classes: Happiness, Sadness, Anger, Fear, Surprise, Disgust, Neutral</p>
+                                <p>💻 Running on: ${data.device || 'CPU'}</p>
+                            `;
+                            modelInfo.classList.remove('hidden');
+                        }
+
+                        document.getElementById('loadVideosBtn').disabled = false;
+
+                        this.log('✅ Enhanced server is online and ready');
+                        return true;
+                    } else {
+                        throw new Error(`Server responded with status ${response.status}`);
+                    }
+                } catch (error) {
+                    this.serverOnline = false;
+                    this.modelLoaded = false;
+
+                    statusElement.className = 'server-status status-offline';
+                    statusElement.innerHTML = '❌ Offline';
+                    statusTextElement.innerHTML = '❌ Offline';
+
+                    connectionInfo.innerHTML = `
+                        <h4>🔗 Server Connection - Offline</h4>
+                        <p>❌ Cannot connect to enhanced facial recognition server</p>
+                        <p>🔧 Start the server with one of these commands:</p>
+                        <pre style="background: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 8px; font-size: 14px;">
+python enhanced_facial_recognition_server.py
+# OR use the auto-configurator:
+python start_facial_server.py</pre>
+                        <p>⚠️ Error: ${error.message}</p>
+                    `;
+                    connectionInfo.className = 'error-message';
+
+                    modelInfo.classList.add('hidden');
+
+                    document.getElementById('loadVideosBtn').disabled = true;
+                    document.getElementById('processAllBtn').disabled = true;
+
+                    this.log(`❌ Server connection failed: ${error.message}`);
+                    return false;
+                }
+            }
+
+            async loadVideos() {
+                if (!this.serverOnline) {
+                    alert('Server is offline. Please check server connection first.');
+                    return;
+                }
+
+                this.log('📁 Loading videos from server...');
+
+                try {
+                    const response = await fetch(`${this.baseURL}/api/get-videos`);
+
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+                    }
+
+                    const videos = await response.json();
+
+                    this.videos = videos;
+                    this.displayStudentsList(videos);
+                    this.updateStats();
+
+                    const studentCount = Object.keys(videos).length;
+                    const videoCount = Object.values(videos).reduce((sum, studentVideos) => sum + studentVideos.length, 0);
+
+                    this.log(`✅ Loaded ${videoCount} videos for ${studentCount} students`);
+
+                    if (videoCount > 0 && this.modelLoaded) {
+                        document.getElementById('processAllBtn').disabled = false;
+                    }
+
+                } catch (error) {
+                    this.log(`❌ Error loading videos: ${error.message}`);
+                    alert(`Failed to load videos: ${error.message}`);
+                }
+            }
+
+            displayStudentsList(videos) {
+                const studentsContainer = document.getElementById('studentsContainer');
+                const videosSection = document.getElementById('videosSection');
+
+                studentsContainer.innerHTML = '';
+
+                if (Object.keys(videos).length === 0) {
+                    videosSection.classList.add('hidden');
+                    return;
+                }
+
+                Object.entries(videos).forEach(([studentName, studentVideos]) => {
+                    const totalSize = studentVideos.reduce((sum, v) => sum + v.size, 0);
+                    const avgSizeMB = (totalSize / (1024 * 1024) / studentVideos.length).toFixed(1);
+
+                    const studentItem = document.createElement('div');
+                    studentItem.className = 'student-item';
+                    studentItem.dataset.student = studentName;
+
+                    studentItem.innerHTML = `
+                        <div class="student-header" onclick="facialManager.toggleStudent('${studentName}')">
+                            <div class="student-info">
+                                <div class="student-avatar">${studentName.charAt(0).toUpperCase()}</div>
+                                <div class="student-details">
+                                    <h4>👤 ${studentName}</h4>
+                                    <div class="student-meta">
+                                        <span><strong>${studentVideos.length}</strong> videos</span>
+                                        <span>Total: <strong>${this.formatFileSize(totalSize)}</strong></span>
+                                        <span>Avg: <strong>${avgSizeMB} MB</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="expand-icon">▼</div>
+                        </div>
+                        <div class="student-videos">
+                            <div class="video-grid">
+                                ${studentVideos.map(video => `
+                                    <div class="video-card">
+                                        <div class="video-info">
+                                            <div class="video-details">
+                                                <h6>📄 ${video.filename}</h6>
+                                                <div class="video-size">${this.formatFileSize(video.size)}</div>
+                                            </div>
+                                        </div>
+                                        <div class="video-actions">
+                                            <button class="btn btn-small" 
+                                                    onclick="facialManager.processSingleVideo('${studentName}', '${video.filename}')"
+                                                    ${!this.modelLoaded ? 'disabled title="Model not loaded"' : ''}>
+                                                🎭 Process
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+
+                    studentsContainer.appendChild(studentItem);
+                });
+
+                videosSection.classList.remove('hidden');
+            }
+
+            toggleStudent(studentName) {
+                const allStudents = document.querySelectorAll('.student-item');
+                const targetStudent = document.querySelector(`[data-student="${studentName}"]`);
+
+                if (!targetStudent) return;
+
+                // Close currently expanded student if different from target
+                if (this.expandedStudent && this.expandedStudent !== studentName) {
+                    const currentExpanded = document.querySelector(`[data-student="${this.expandedStudent}"]`);
+                    if (currentExpanded) {
+                        currentExpanded.classList.remove('expanded');
+                    }
+                }
+
+                // Toggle target student
+                const isExpanded = targetStudent.classList.contains('expanded');
+                if (isExpanded) {
+                    targetStudent.classList.remove('expanded');
+                    this.expandedStudent = null;
+                } else {
+                    targetStudent.classList.add('expanded');
+                    this.expandedStudent = studentName;
+                }
+            }
+
+            updateStats() {
+                const totalStudents = Object.keys(this.videos).length;
+                const totalVideos = Object.values(this.videos).reduce((sum, videos) => sum + videos.length, 0);
+
+                document.getElementById('totalStudents').textContent = totalStudents;
+                document.getElementById('totalVideos').textContent = totalVideos;
+            }
+
+            async processSingleVideo(studentName, videoFilename) {
+                if (!this.serverOnline || !this.modelLoaded) {
+                    alert('Server offline or model not loaded. Please check server status.');
+                    return;
+                }
+
+                this.log(`🎬 Processing ${studentName}/${videoFilename} with NKF model...`);
+
+                try {
+                    const response = await fetch(`${this.baseURL}/api/process-video`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ student_name: studentName, video_filename: videoFilename })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.error || `Server error: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.status === 'success') {
+                        const detectionRate = result.face_detection_rate ? (result.face_detection_rate * 100).toFixed(1) + '%' : 'N/A';
+                        this.log(`✅ ${studentName}/${videoFilename}: ${result.primary_emotion} (${detectionRate} face detection)`);
+
+                        if (result.timeline && result.timeline.length > 0) {
+                            this.log(`   📈 ${result.timeline.length} emotion segments detected`);
+                            this.log(`   ⏱️ Duration: ${result.duration}s`);
+                        }
+                    } else {
+                        this.log(`❌ ${studentName}/${videoFilename}: ${result.error || 'Processing failed'}`);
+                    }
+
+                } catch (error) {
+                    this.log(`❌ Error processing ${studentName}/${videoFilename}: ${error.message}`);
+                    alert(`Processing failed: ${error.message}`);
+                }
+            }
+
+            async processAllVideos() {
+                if (this.processing) return;
+                if (!this.serverOnline || !this.modelLoaded) {
+                    alert('Server offline or model not loaded. Please check server status.');
+                    return;
+                }
+
+                this.processing = true;
+                document.getElementById('processAllBtn').disabled = true;
+
+                this.log('🚀 Starting batch processing with NKF model...');
+                this.updateProgress(0, 'Initializing batch processing...');
+
+                try {
+                    const response = await fetch(`${this.baseURL}/api/process-all`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.error || `Server error: ${response.status}`);
+                    }
+
+                    const results = await response.json();
+
+                    this.updateProgress(100, 'Processing complete!', `Processed ${results.total_videos} videos: ${results.successful} successful, ${results.failed} failed`);
+
+                    this.log(`✅ Batch processing complete!`);
+                    this.log(`📊 Total: ${results.total_videos}, Success: ${results.successful}, Failed: ${results.failed}`);
+
+                    if (results.model_type) this.log(`🤖 Model used: ${results.model_type}`);
+
+                    this.displayBatchResults(results);
+
+                } catch (error) {
+                    this.log(`❌ Batch processing error: ${error.message}`);
+                    this.updateProgress(0, 'Error occurred', error.message);
+                    alert(`Batch processing failed: ${error.message}`);
+                } finally {
+                    this.processing = false;
+                    document.getElementById('processAllBtn').disabled = false;
+                }
+            }
+
+            displayBatchResults(results) {
+                const resultsContent = document.getElementById('resultsContent');
+                const resultsSection = document.getElementById('resultsSection');
+
+                // header / stats html
+                let html = `
+                    <div style="margin-bottom: 25px;">
+                        <h4>📊 Enhanced NKF Processing Results</h4>
+                        <div class="video-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">${results.total_videos}</div>
+                                <div class="stat-label">Total Videos</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" style="color: #27ae60;">${results.successful}</div>
+                                <div class="stat-label">Successful</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" style="color: #e74c3c;">${results.failed}</div>
+                                <div class="stat-label">Failed</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${results.model_type || 'NKF'}</div>
+                                <div class="stat-label">Model Used</div>
+                            </div>
+                        </div>
+                        <p><small>Processed: ${new Date(results.processed_at).toLocaleString()}</small></p>
+                    </div>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Video</th>
+                                <th>Status</th>
+                                <th>Primary Emotion</th>
+                                <th>Duration</th>
+                                <th>Face Detection</th>
+                                <th>Confidence</th>
+                                <th>Segments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                // GROUP BY student (frontend only)
+                const grouped = {};
+                results.results.forEach(r => {
+                    if (!grouped[r.student]) {
+                        grouped[r.student] = {
+                            student: r.student,
+                            entries: [],
+                            success_videos: [],
+                            failed_videos: [],
+                            primary_emotion_counts: {},
+                            total_duration: 0,
+                            face_detection_values: [],
+                            timeline_segments: 0,
+                            per_video_avg_conf: []
+                        };
+                    }
+
+                    const g = grouped[r.student];
+                    g.entries.push(r);
+
+                    // categorize video
+                    if (r.status === 'success') g.success_videos.push(r.video);
+                    else { g.failed_videos.push(r.video); }
+
+                    // count primary emotion occurrences
+                    if (r.primary_emotion) {
+                        g.primary_emotion_counts[r.primary_emotion] = (g.primary_emotion_counts[r.primary_emotion] || 0) + 1;
+                    }
+
+                    // sum duration if present
+                    if (typeof r.duration === 'number') g.total_duration += r.duration;
+
+                    // face detection rates (collect)
+                    if (typeof r.face_detection_rate === 'number') g.face_detection_values.push(r.face_detection_rate);
+
+                    // segments count
+                    if (Array.isArray(r.timeline)) g.timeline_segments += r.timeline.length;
+
+                    // compute per-video average confidence (if timeline present)
+                    if (Array.isArray(r.timeline) && r.timeline.length > 0) {
+                        const avgConf = r.timeline.reduce((s, seg) => s + (seg.confidence || 0), 0) / r.timeline.length;
+                        g.per_video_avg_conf.push(avgConf);
+                    }
+                });
+
+                // Build merged rows
+                const mergedResults = Object.values(grouped);
+
+                mergedResults.forEach(g => {
+                    // Videos column logic:
+                    let videosDisplay = '-';
+                    if (g.failed_videos.length > 0) {
+                        videosDisplay = 'Error: ' + g.failed_videos.join(', ');
+                    } else if (g.success_videos.length > 1) {
+                        videosDisplay = 'All Videos';
+                    } else if (g.success_videos.length === 1) {
+                        videosDisplay = g.success_videos[0];
+                    } else {
+                        // fallback: if no success but entries exist (unlikely), show entries filenames
+                        videosDisplay = g.entries.map(e => e.video).join(', ');
+                    }
+
+                    // Status: if any failure, folder = failed else success
+                    const status = g.failed_videos.length > 0 ? 'failed' : 'success';
+                    const statusColor = status === 'success' ? '#27ae60' : '#e74c3c';
+
+                    // Primary emotion: most frequent among primary_emotion_counts
+                    let primaryEmotion = '-';
+                    const emotionEntries = Object.entries(g.primary_emotion_counts);
+                    if (emotionEntries.length > 0) {
+                        emotionEntries.sort((a, b) => b[1] - a[1]);
+                        primaryEmotion = emotionEntries[0][0];
+                    }
+
+                    // Duration: total duration (sum of durations)
+                    const durationText = g.total_duration ? parseFloat(g.total_duration.toFixed(2)) + 's' : '-';
+
+                    // Face detection: average across videos (if any)
+                    let faceDetectText = '-';
+                    if (g.face_detection_values.length > 0) {
+                        const avgFace = g.face_detection_values.reduce((a,b) => a + b, 0) / g.face_detection_values.length;
+                        faceDetectText = (avgFace * 100).toFixed(1) + '%';
+                    }
+
+                    // Confidence: average of per-video average confidences
+                    let confidenceText = '-';
+                    if (g.per_video_avg_conf.length > 0) {
+                        const avgConfAcrossVideos = g.per_video_avg_conf.reduce((a,b) => a + b, 0) / g.per_video_avg_conf.length;
+                        confidenceText = avgConfAcrossVideos.toFixed(3);
+                    }
+
+                    // Segments: total timeline segments across videos
+                    const segmentsText = g.timeline_segments || '-';
+
+                    // Emotion tag display (if available)
+                    const emotionHTML = primaryEmotion !== '-' ? `<span class="emotion-tag emotion-${primaryEmotion.toLowerCase()}">${primaryEmotion}</span>` : '-';
+
+                    html += `
+                        <tr>
+                            <td><strong>${g.student}</strong></td>
+                            <td>${videosDisplay}</td>
+                            <td style="color: ${statusColor}; font-weight: bold;">${status}</td>
+                            <td>${emotionHTML}</td>
+                            <td>${durationText}</td>
+                            <td>${faceDetectText}</td>
+                            <td>${confidenceText}</td>
+                            <td>${segmentsText}</td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table>';
+
+                resultsContent.innerHTML = html;
+                resultsSection.classList.remove('hidden');
+            }
+
+            async viewResults() {
+                if (!this.serverOnline) {
+                    alert('Server is offline. Please check server connection first.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${this.baseURL}/api/get-results`);
+                    const resultsList = await response.json();
+
+                    if (resultsList.length === 0) {
+                        this.log('📋 No results found. Process some videos first.');
+                        return;
+                    }
+
+                    const latestResult = resultsList[0];
+                    const detailResponse = await fetch(`${this.baseURL}/api/get-result/${latestResult.filename}`);
+                    const detailData = await detailResponse.json();
+
+                    this.displayBatchResults(detailData);
+                    this.log(`📋 Loaded latest results: ${latestResult.filename}`);
+                    this.log(`   Model: ${latestResult.model_type || 'Unknown'}`);
+                    this.log(`   Processed: ${new Date(latestResult.processed_at).toLocaleString()}`);
+
+                } catch (error) {
+                    this.log(`❌ Error loading results: ${error.message}`);
+                    alert(`Failed to load results: ${error.message}`);
+                }
+            }
+
+            async exportResults() {
+                if (!this.serverOnline) {
+                    alert('Server is offline. Please check server connection first.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${this.baseURL}/api/get-results`);
+                    const resultsList = await response.json();
+
+                    if (resultsList.length === 0) {
+                        this.log('📤 No results to export');
+                        alert('No results to export. Process some videos first.');
+                        return;
+                    }
+
+                    const latestResult = resultsList[0];
+                    const detailResponse = await fetch(`${this.baseURL}/api/get-result/${latestResult.filename}`);
+                    const detailData = await detailResponse.json();
+
+                    const blob = new Blob([JSON.stringify(detailData, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `enhanced_facial_results_${new Date().toISOString().slice(0,10)}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+
+                    this.log('📤 Enhanced results exported successfully');
+
+                } catch (error) {
+                    this.log(`❌ Export error: ${error.message}`);
+                    alert(`Export failed: ${error.message}`);
+                }
+            }
+
+            updateProgress(percentage, text, details = '') {
+                document.getElementById('progressFill').style.width = `${percentage}%`;
+                document.getElementById('progressText').textContent = text;
+                document.getElementById('progressDetails').textContent = details;
+            }
+
+            log(message) {
+                const logOutput = document.getElementById('logOutput');
+                const logSection = document.getElementById('logSection');
+                const timestamp = new Date().toLocaleTimeString();
+
+                logOutput.innerHTML += `<span style="color: #3498db;">[${timestamp}]</span> ${message}<br>`;
+                logOutput.scrollTop = logOutput.scrollHeight;
+                logSection.classList.remove('hidden');
+
+                console.log(`[${timestamp}] ${message}`);
+            }
+
+            formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        }
+
+        const facialManager = new EnhancedFacialRecognitionManager();
+    </script>
+</body>
+</html>

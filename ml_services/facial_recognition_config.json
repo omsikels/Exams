@@ -1,0 +1,6 @@
+{
+  "videos_folder": "C:\\xampp\\htdocs\\exam\\videos",
+  "model_path": "C:\\xampp\\htdocs\\exam\\ml_services\\checkpoints_fer_IR50_Resnet",
+  "fan_path": "C:\\xampp\\htdocs\\exam\\ml_services\\checkpoints_rafdb_landmarks",
+  "results_folder": "C:\\xampp\\htdocs\\exam\\ml_services\\facial_results"
+}

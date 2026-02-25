@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    :root {
+      /* Matched to the student exam interface */
+      --bg-color: #cbbde5; 
+      --action-bg: #ffffff;
+      --border-color: #000000;
+      --border-width: 4px;
+      --border-radius: 20px;
+      --font-family: Arial, sans-serif;
+      --shadow-large: 6px 6px 0px rgba(0, 0, 0, 0.2);
+      --shadow-small: 4px 4px 0px rgba(0, 0, 0, 0.2);
+      --shadow-pressed: 2px 2px 0px rgba(0, 0, 0, 0.2);
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: var(--font-family);
+      background-color: var(--bg-color);
+      height: 100vh;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Top Bar Styling */
+    .top-bar {
+      border: var(--border-width) solid var(--border-color);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--bg-color);
+      box-shadow: var(--shadow-large);
+    }
+
+    .top-bar h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    /* Main Container */
+    .admin-container {
+      display: flex;
+      flex: 1;
+      gap: 20px;
+      min-height: 0; /* allows children to scroll properly */
+    }
+
+    /* Left Panel Styling */
+    .left-panel {
+      width: 280px;
+      border: var(--border-width) solid var(--border-color);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      background-color: var(--bg-color);
+      box-shadow: var(--shadow-large);
+    }
+
+    /* Right Panel Styling */
+    .right-panel {
+      flex: 1;
+      border: var(--border-width) solid var(--border-color);
+      padding: 30px;
+      overflow-y: auto;
+      background-color: var(--bg-color);
+      box-shadow: var(--shadow-large);
+      position: relative;
+    }
+
+    .right-panel h2.panel-title {
+      margin-top: 0;
+      margin-bottom: 25px;
+      font-size: 1.6rem;
+      text-transform: uppercase;
+    }
+
+    /* General Button Styling (Brutalist) */
+    button {
+      background: var(--action-bg);
+      border: var(--border-width) solid var(--border-color);
+      padding: 10px 20px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      font-family: var(--font-family);
+      color: #000;
+      box-shadow: var(--shadow-small);
+      transition: all 0.1s ease;
+      text-transform: uppercase;
+    }
+
+    button:hover {
+      background: #e0e0e0;
+    }
+
+    button:active {
+      transform: translate(2px, 2px);
+      box-shadow: var(--shadow-pressed);
+    }
+
+    #logout {
+      padding: 10px 30px;
+    }
+
+    #refreshVideos {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    /* Menu Cards / Buttons */
+    .menu-cards {
+      display: flex;
+      gap: 25px;
+      margin-top: 10px;
+    }
+
+    .card {
+      width: 180px;
+      height: 180px;
+      background: var(--action-bg);
+      border: var(--border-width) solid var(--border-color);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-large);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      gap: 15px;
+      padding: 15px;
+    }
+
+    .card:hover {
+      background: #f0f0f0;
+    }
+    
+    .card:active {
+      transform: translate(4px, 4px);
+      box-shadow: var(--shadow-pressed);
+    }
+
+    .card span {
+      font-size: 2rem;
+    }
+
+    /* Content Views */
+    .content-view {
+      display: none;
+    }
+    
+    .content-view.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .back-btn {
+      margin-bottom: 25px;
+      background: #d8cdec;
+    }
+
+    /* Preserved Original Styles for Editor content, adapted for brutalism */
+    .section {
+      border: var(--border-width) solid var(--border-color);
+      padding: 20px;
+      margin-bottom: 25px;
+      background: var(--action-bg);
+      box-shadow: var(--shadow-small);
+    }
+    
+    .section h3 {
+        margin-top: 0;
+        text-transform: uppercase;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .video-box { border: var(--border-width) solid #000; height: 240px; display: flex; align-items: center; justify-content: center; background: #fafafa; margin-bottom: 15px; }
+    .timeline { height: 40px; border: var(--border-width) solid #000; position: relative; cursor: pointer; margin-bottom: 15px; background: #e0d8f0; }
+    .emotion-list { display: none; border: var(--border-width) solid #000; padding: 15px; margin-top: 15px; background: #fff; box-shadow: var(--shadow-small); }
+    
+    #generateJson { background: #cce5ff; }
+    #saveEdits { background: #d4edda; }
+    #undoSplit { background: #f8d7da; }
+    
+    #videoPlayer { display: block; border: var(--border-width) solid #000; background: #000; max-width: 100%; box-shadow: var(--shadow-small); }
+    #videoTimeline { position: relative; cursor: pointer; border: var(--border-width) solid #000 !important; }
+    .timeline-marker { position: absolute; top: 0; width: 4px; height: 100%; background: red; z-index: 2; }
+    
+    .user-header { font-weight: bold; margin-top: 15px; padding-bottom: 5px; border-bottom: 2px solid #000; }
+    .user-header:hover { cursor: pointer; background: rgba(0,0,0,0.05); }
+    #videosTree a { color: #000; text-decoration: none; display: block; margin: 8px 0; padding: 5px; border: 2px solid transparent; }
+    #videosTree a:hover { border-color: #000; background: #fff; }
+    #videosTree a.active { font-weight: bold; background: #fff; border: 2px solid #000; box-shadow: 2px 2px 0px rgba(0,0,0,0.2); }
+    
+    .time-field { margin-bottom: 15px; }
+    .time-field label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .time-field input { width: 120px; padding: 8px; border: var(--border-width) solid #000; background: #fff; font-family: var(--font-family); font-weight: bold; }
+    .time-field input:focus { outline: none; background: #e0d8f0; }
+    
+    .question-summary { background: #f0f0f0; padding: 15px; border: var(--border-width) solid #000; margin-bottom: 20px; font-weight: bold; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  
+  <div class="top-bar">
+    <h2>Admin Panel</h2>
+    <button id="logout">Logout</button>
+  </div>
+
+  <div class="admin-container">
+    <div class="left-panel">
+      <button id="refreshVideos">Refresh Video List</button>
+      <div id="videosTree"></div>
+      <div id="videoList"></div>
+      <div id="emotionList" class="emotion-list">
+        <h4 style="margin-top:0; border-bottom: 2px solid #000; padding-bottom: 5px;">Detected Emotions</h4>
+        <ul id="emotions" style="padding-left: 20px; margin-bottom: 0;"></ul>
+      </div>
+    </div>
+  
+    <div class="right-panel">
+      <h2 class="panel-title">Admin Editor</h2>
+
+      <div id="main-menu" class="menu-cards active">
+        <div class="card" onclick="showView('questions-view')">
+          <div>Questions</div>
+          <span>?</span>
+        </div>
+        
+        <div class="card" onclick="showView('video-view')">
+          <div>Video Preview</div>
+          <span>📹</span>
+        </div>
+        
+        <div class="card" onclick="window.open('/enhanced_facial_recognition.html', '_blank')">
+          <div>Enhanced<br>Facial<br>Recognition</div>
+        </div>
+      </div>
+
+      <div id="questions-view" class="content-view">
+        <button class="back-btn" onclick="showView('main-menu')">← Back to Menu</button>
+        
+        <div class="section">
+          <h3>Questions</h3>
+          <div id="questionList"></div>
+          <button id="addQuestion" style="margin-top: 15px;">+ Add Question</button>
+        </div>
+
+        <div class="section">
+          <h3>Exam Summary</h3>
+          <div class="question-summary">
+            <p style="margin-top:0;">Individual question timing is now enabled.</p>
+            <p>Set the time limit for each question individually.</p>
+            <p style="margin-bottom:0;">The total exam time will be calculated automatically.</p>
+          </div>
+          <button id="saveAll">Save All Questions</button>
+        </div>
+
+        <div class="section">
+          <h3>Edit Questions</h3>
+          <div id="editor"></div>
+        </div>
+      </div>
+
+      <div id="video-view" class="content-view">
+        <button class="back-btn" onclick="showView('main-menu')">← Back to Menu</button>
+        
+        <div id="videoEditor" class="section">
+          <h3>Video Preview</h3>
+
+          <video id="videoPlayer" width="600" controls></video>
+
+          <div id="controls" style="margin-top: 15px; display: flex; gap: 10px;">
+              <button id="playPause">▶ Play</button>
+              <button id="markSplit">Split Segment</button>
+              <button id="undoSplit">↩ Undo Last Split</button>
+          </div>
+
+          <div id="videoTimeline"
+              style="position: relative;
+              width: 100%;
+              max-width: 600px;
+              height: 35px;
+              background: #e0d8f0;
+              margin-top: 20px;
+              overflow: hidden;">
+          <div id="timelineProgress"
+              style="position: absolute;
+              top: 0;
+              left: 0;
+              height: 100%;
+              width: 0%;
+              background: rgba(0, 0, 0, 0.3);
+              pointer-events: none;"></div>
+          </div>
+
+          <div style="margin-top: 25px; border-top: 2px solid #000; padding-top: 20px; display: flex; gap: 10px;">
+              <button id="generateJson">Generate JSON</button>
+              <button id="saveEdits">Save Edits</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="/js/admin.js"></script>
+  <script type="module" src="/js/videoSegment.js"></script>
+  <script type="module" src="/js/generateJson.js"></script>
+  <script>
+    // View Switcher Logic
+    function showView(viewId) {
+      document.getElementById('main-menu').classList.remove('active');
+      document.getElementById('questions-view').classList.remove('active');
+      document.getElementById('video-view').classList.remove('active');
+      
+      document.getElementById('main-menu').style.display = 'none';
+      document.getElementById('questions-view').style.display = 'none';
+      document.getElementById('video-view').style.display = 'none';
+      
+      const target = document.getElementById(viewId);
+      target.style.display = viewId === 'main-menu' ? 'flex' : 'block';
+      setTimeout(() => target.classList.add('active'), 10);
+    }
+
+    // Temporary right-click handler for showing emotion list
+    document.addEventListener("contextmenu", (e) => {
+      if (e.target.tagName === "A" && e.target.href.endsWith(".mp4")) {
+        e.preventDefault();
+        const list = document.getElementById("emotionList");
+        list.style.display = "block";
+        list.style.position = "absolute";
+        list.style.top = e.pageY + "px";
+        list.style.left = e.pageX + "px";
+        list.style.zIndex = "100";
+      }
+    });
+
+    // Hide emotion list when clicking elsewhere
+    document.addEventListener("click", (e) => {
+      const list = document.getElementById("emotionList");
+      if (list.style.display === "block" && !list.contains(e.target)) {
+        list.style.display = "none";
+      }
+    });
+
+    document.getElementById('logout').onclick = async () => {
+      await fetch('/logout', { method: 'POST' });
+      location.href = '/login.html';
+    };
+  </script>
+</body>
+</html>
