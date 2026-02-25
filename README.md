@@ -3,11 +3,11 @@
 </p>
 
 <p align="center">
-<img src="[https://img.shields.io/badge/Node.js-20.11-43853D?style=for-the-badge&logo=node.js&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/Node.js-20.11-43853D%3Fstyle%3Dfor-the-badge%26logo%3Dnode.js%26logoColor%3Dwhite)" alt="Node.js">
-<img src="[https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/Python-3.11-3776AB%3Fstyle%3Dfor-the-badge%26logo%3Dpython%26logoColor%3Dwhite)" alt="Python">
-<img src="[https://img.shields.io/badge/PyTorch-2.9.1-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/PyTorch-2.9.1-EE4C2C%3Fstyle%3Dfor-the-badge%26logo%3Dpytorch%26logoColor%3Dwhite)" alt="PyTorch">
-<img src="[https://img.shields.io/badge/OpenCV-4.12-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/OpenCV-4.12-5C3EE8%3Fstyle%3Dfor-the-badge%26logo%3Dopencv%26logoColor%3Dwhite)" alt="OpenCV">
-<img src="[https://img.shields.io/badge/Flask-Enabled-000000?style=for-the-badge&logo=flask&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/Flask-Enabled-000000%3Fstyle%3Dfor-the-badge%26logo%3Dflask%26logoColor%3Dwhite)" alt="Flask">
+<img src="https://img.shields.io/badge/Node.js-20.11-43853D?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js">
+<img src="https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+<img src="https://img.shields.io/badge/PyTorch-2.9.1-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch">
+<img src="https://img.shields.io/badge/OpenCV-4.12-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white" alt="OpenCV">
+<img src="https://img.shields.io/badge/Flask-Enabled-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask">
 </p>
 
 > **Exam 3000** is a comprehensive, web-based examination system integrated with a state-of-the-art Machine Learning backend. It is designed to administer secure exams while simultaneously recording and analyzing student facial expressions and emotions to monitor testing integrity.
